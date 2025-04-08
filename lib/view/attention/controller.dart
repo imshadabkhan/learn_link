@@ -3,21 +3,20 @@ import 'package:get/get.dart';
 import 'package:learn_link/core/constants/asset_constant.dart';
 
 class AttentionModuleController extends GetxController {
-  int currentIndex = 0;
-  int totalMarks = 0;
-  String? selectedImage;
- RxBool overlayVisible = false.obs;
+  RxInt currentIndex = 0.obs;
+  RxInt totalMarks = 0.obs;
+  RxnString selectedImage = RxnString();
+  RxBool overlayVisible = false.obs;
   RxDouble opacity = 1.0.obs;
 
-
-  final RxList<String> mainImages = [
+  final List<String> mainImages = [
     ImageConstants.mainImage1,
     ImageConstants.mainImageFrog,
     ImageConstants.mainImageDuck,
     ImageConstants.mainImageCroc,
-  ].obs;
+  ];
 
-  final RxList<List<String>> subImages = [
+  final List<List<String>> subImages = [
     [
       ImageConstants.sub_Image1,
       ImageConstants.sub_Image2,
@@ -42,39 +41,37 @@ class AttentionModuleController extends GetxController {
       ImageConstants.sub_ImageCroc3,
       ImageConstants.sub_ImageCroc4,
     ],
-  ].obs;
+  ];
 
   void marksCounter() {
-    if (selectedImage == null) {
+    if (selectedImage.value == null) {
       debugPrint("⚠ No image selected yet.");
       return;
     }
 
-    if (selectedImage == mainImages[currentIndex]) {
-      totalMarks++;
+    if (selectedImage.value == mainImages[currentIndex.value]) {
+      totalMarks.value++;
       debugPrint("✔ Correct Answer!");
     } else {
       debugPrint("❌ Wrong Answer!");
     }
 
-    debugPrint("Selected Image: $selectedImage");
-    debugPrint("Correct Image: ${mainImages[currentIndex]}");
+    debugPrint("Selected Image: ${selectedImage.value}");
+    debugPrint("Correct Image: ${mainImages[currentIndex.value]}");
 
     // Move to the next question
-    if (currentIndex < mainImages.length - 1) {
-      currentIndex++;
-      selectedImage = null;
+    if (currentIndex.value < mainImages.length - 1) {
+      currentIndex.value++;
+      selectedImage.value = '';
+
       overlayVisible.value = true;
-
-
+      opacity.value = 1.0;
 
       Future.delayed(const Duration(seconds: 5), () {
         opacity.value = 0.0;
 
-
         Future.delayed(const Duration(seconds: 1), () {
           overlayVisible.value = false;
-
         });
       });
     } else {
@@ -83,16 +80,15 @@ class AttentionModuleController extends GetxController {
   }
 
   void opacityAndVisibilityController() {
+    overlayVisible.value = true;
+    opacity.value = 1.0;
+
     Future.delayed(const Duration(seconds: 5), () {
       opacity.value = 0.0;
 
-
       Future.delayed(const Duration(seconds: 1), () {
         overlayVisible.value = false;
-
       });
     });
   }
-
-
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:learn_link/view/modules/attention/attention.dart';
+import 'package:learn_link/view/speaking/speaking_screen.dart';
+
+
+import 'view/attention/attention_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -27,7 +30,8 @@ class MyApp extends StatelessWidget {
           home: child,
         );
       },
-      child: AttentionModule(),
+       child: SpeakingScreen(),
+      // child: AttentionModule(),
     );
   }
 }
