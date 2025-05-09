@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:learn_link/view/speaking/speaking_screen.dart';
+import 'package:learn_link/view/writing.dart';
 
 
 import 'view/attention/attention_screen.dart';
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
           home: child,
         );
       },
-       child: SpeakingScreen(),
+       child: DyslexiaImageScanner(),
       // child: AttentionModule(),
     );
   }
