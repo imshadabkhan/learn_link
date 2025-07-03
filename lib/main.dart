@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:learn_link/view/speaking/speaking_screen.dart';
+import 'package:get/get.dart';
+import 'package:learn_link/core/routes/app_routes.dart';
+import 'package:learn_link/view/auth/signup/signup.dart';
 import 'package:learn_link/view/writing.dart';
 
-
 import 'view/attention/attention_screen.dart';
+import 'view/letter_reversal/view/letter_reversal.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -20,7 +23,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       // Use builder only if you need to use library outside ScreenUtilInit context
       builder: (_ , child) {
-        return MaterialApp(
+        return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'First Method',
           // You can use the library anywhere in the app even in theme
@@ -29,10 +32,12 @@ class MyApp extends StatelessWidget {
             textTheme: Typography.englishLike2018.apply(fontSizeFactor: 1.sp),
           ),
           home: child,
+          getPages: AppRoutes.routes,
         );
       },
-       child: DyslexiaImageScanner(),
-      // child: AttentionModule(),
+      // child: Signup(),
+       // child: DyslexiaImageScanner(),
+       child: AttentionModule(),
     );
   }
 }

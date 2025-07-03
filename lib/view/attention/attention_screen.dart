@@ -18,7 +18,7 @@ class AttentionModule extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text("Learn Link"),
-            Obx(() => Text("${attentionModuleController.totalMarks.value}/10")),
+            Obx(() => Text("${attentionModuleController.totalMarks.value}/4")),
           ],
         ),
       ),
