@@ -35,9 +35,9 @@ class MyApp extends StatelessWidget {
           getPages: AppRoutes.routes,
         );
       },
-      // child: Signup(),
+      child: Signup(),
        // child: DyslexiaImageScanner(),
-       child: AttentionModule(),
+       // child: AttentionModule(),
     );
   }
 }
