@@ -1,50 +1,94 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:learn_link/core/routes/app_routes.dart';
+
 import 'package:learn_link/core/widgets/custom_button.dart';
 import 'package:learn_link/core/widgets/entry_field.dart';
 import 'package:learn_link/core/widgets/widgets.dart';
+import 'package:learn_link/view/auth/signup/controller.dart';
 import 'package:learn_link/view/auth/signup/signup.dart';
 
 class Login extends StatelessWidget {
-  const Login({super.key});
+  Login({super.key});
+
+  final AuthenticationController controller = Get.put(AuthenticationController());
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(elevation: 0,scrolledUnderElevation: 0,backgroundColor: Colors.white,),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 10),
-        child: ListView(children: [
-          EntryField(label: "email",hint: 'Enter your email',),
-          EntryField(label: "password",hint: "Enter your password",),
-
-          Widgets.heightSpaceH5,
-          CustomButton(
-            onTap: (){
-              Navigator.pushNamed(context, AppRoutes.letterReversal);
-            },
-            label: "Login",
-            backgroundColor: Colors.red,
-          ),
-          Widgets.heightSpaceH2,
-          Align(alignment: Alignment.center,child:  RichText(text: TextSpan(text: "Don't have an account?",style: TextStyle(fontWeight: FontWeight.normal,fontSize: 14,color: Colors.black),children: [
-            TextSpan(
-recognizer: TapGestureRecognizer()
-                ..onTap=(){
-  Get.to(()=>Signup());
-          },
-                text: " Register",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14,color: Colors.blue)),
-          ]),),),
-
-
-
-
-        ],),
+      appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.white,
       ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+        child: ListView(
+          children: [
+            EntryField(
+              label: "Email",
+              hint: 'Enter your email',
+              controller: email,
+            ),
+            EntryField(
+              label: "Password",
+              hint: "Enter your password",
+              controller: password,
 
+            ),
+            Widgets.heightSpaceH5,
+            CustomButton(
+              onTap: () async {
+                if (email.text.isEmpty || password.text.isEmpty) {
+                  Widgets.showSnackBar("Error", "Please enter email and password");
+                  return;
+                }
+
+                await controller.loginUser(loginData:
+                  {
+                    "email": email.text.trim(),
+                    "password": password.text.trim(),
+                  },
+                );
+              },
+              label: "Login",
+              backgroundColor: Colors.red,
+            ),
+            Widgets.heightSpaceH2,
+            Align(
+              alignment: Alignment.center,
+              child: RichText(
+                text: TextSpan(
+                  text: "Don't have an account?",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 14,
+                    color: Colors.black,
+                  ),
+                  children: [
+                    TextSpan(
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Get.to(() => Signup());
+                        },
+                      text: "Register",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
+

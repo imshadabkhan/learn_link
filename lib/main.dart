@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:learn_link/core/routes/app_routes.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
       // Use builder only if you need to use library outside ScreenUtilInit context
       builder: (_ , child) {
         return GetMaterialApp(
+          builder: EasyLoading.init(),
           debugShowCheckedModeBanner: false,
           title: 'First Method',
           // You can use the library anywhere in the app even in theme

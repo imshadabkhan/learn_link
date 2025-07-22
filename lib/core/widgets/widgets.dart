@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 
 class Widgets {
@@ -37,6 +39,42 @@ class Widgets {
   static var widthSpaceW4 = SizedBox(
     width: 20.w,
   );
+
+  static void hideLoader() {
+    EasyLoading.dismiss();
+  }
+
+  static void showLoader(String message) {
+    EasyLoading.instance
+      ..displayDuration = const Duration(milliseconds: 2000)
+      ..loadingStyle = EasyLoadingStyle.custom
+      ..backgroundColor = Colors.black
+      ..indicatorColor = Colors.white
+      ..textColor = Colors.white
+      ..maskColor = Colors.black
+      ..dismissOnTap = false;
+
+    EasyLoading.show(
+      maskType: EasyLoadingMaskType.none,
+      indicator: CircularProgressIndicator(color: Colors.red),
+      status: message,
+    );
+  }
+
+  static void showSnackBar(String title, String message) {
+    Get.snackbar(
+      icon: Icon(
+        title != "Success" ? Icons.info_outline : Icons.check_circle_outline,
+        color: Colors.white,
+      ),
+      title,
+      borderColor: Colors.white,
+      borderWidth: 5,
+      message,
+      backgroundColor: title != "Success" ? Colors.black87 : Colors.black87,
+      colorText: Colors.white,
+    );
+  }
 
 
 

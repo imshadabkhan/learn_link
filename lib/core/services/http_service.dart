@@ -9,7 +9,7 @@ import 'package:learn_link/core/constants/api_endpoints.dart';
 class ApiService {
   static Dio dioService = Dio();
 //For getting data from backend
-  static Future<dynamic> getData(String endPoint) async {
+  static Future<dynamic> getData({String? endPoint}) async {
     final userController = Get.find<UserController>();
 
     try {
@@ -48,7 +48,7 @@ class ApiService {
   }
 
   //for sending data to backend
-  static Future<dynamic> postData(String endpoint, dynamic data) async {
+  static Future<dynamic> postData({String? endpoint, dynamic data}) async {
     final userController = Get.find<UserController>();
 
     try {
