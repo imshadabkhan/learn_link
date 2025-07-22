@@ -61,6 +61,8 @@ class Widgets {
     );
   }
 
+
+
   static void showSnackBar(String title, String message) {
     Get.snackbar(
       icon: Icon(

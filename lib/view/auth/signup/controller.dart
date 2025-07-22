@@ -9,42 +9,53 @@ import 'package:learn_link/view/auth/login/login_view.dart';
 import '../../../controller/usercontroller.dart';
 
 class AuthenticationController {
-  UserController userController = Get.put<UserController>(UserController());
+  final selectedRole = ''.obs;
 
-  Future<String?> registerUser(
-      {String? userName,
-      String? userEmail,
-      String? password,
-      String? role,
-      String? age}) async {
+  UserController userController = Get.put<UserController>(UserController());
+  final isPasswordHidden = true.obs;
+  Future<String?> registerUser({required Map<String, String> data}) async {
     Widgets.showLoader('Creating account...');
     try {
       final response = await ApiService.postData(
-          endpoint: Endpoints.register,
-          data: {
-            "name": userName,
-            "email": userEmail,
-            "password": password,
-            "age":age,
-            "role": role
-          });
-      Widgets.hideLoader();
-      if (response != null &&
-          response['message'] == "User registered successfully!") {
-        Widgets.showSnackBar(
-            'User Registered', "User registered successfully!");
-        Get.to(() => Login());
-      } else {
-        Widgets.hideLoader();
-        Widgets.showSnackBar('Error', "unexpected response from server");
+        endpoint: Endpoints.register,
+        data: data,
+      );
 
+      debugPrint("Register data sent by user: ${data.toString()}");
+      Widgets.hideLoader();
+
+      // Check if response is null or message is missing
+      if (response == null || response['message'] == null) {
+        Widgets.showSnackBar('Error', 'No response from server');
         return null;
       }
+
+      final message = response['message'].toString();
+
+      // Success case
+      if (message == "User registered successfully!") {
+        Widgets.showSnackBar('User Registered', message);
+        Get.to(() => Login());
+        return "success";
+      }
+
+      // Known error case
+      if (message == "User already exists") {
+        Widgets.showSnackBar('Registration Failed', 'This user already exists. Try logging in.');
+        return null;
+      }
+
+      // Fallback: show any other message from server
+      Widgets.showSnackBar('Error', message);
+      return null;
+
     } catch (e) {
       Widgets.hideLoader();
-      Widgets.showSnackBar('Error', "Failed to register user!");
+      Widgets.showSnackBar('Error', 'Failed to register user! ${e.toString()}');
+      return null;
     }
   }
+
 
 
   Future<void> loginUser({required Map<String, dynamic> loginData}) async {

@@ -70,7 +70,7 @@ class ApiService {
           print("Status Code: ${response.statusCode}");
           print("URL: ${Endpoints.baseUrl}$endpoint");
         }
-        return null;
+        return response.data;
       }
     } on DioException catch (e) {
       if (kDebugMode) {
@@ -80,12 +80,14 @@ class ApiService {
           print("Error Status: ${e.response?.statusCode}");
         }
       }
-      return null;
+
+      return e.response?.data;
     } catch (e) {
       if (kDebugMode) print("Unexpected Error: $e");
       return null;
     }
   }
+
 
 
 }
