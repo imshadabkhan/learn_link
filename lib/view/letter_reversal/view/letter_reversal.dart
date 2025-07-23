@@ -20,10 +20,11 @@ class LetterQuizScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Which sound did you hear? ${userController.username}',
-                style: TextStyle(fontSize: 20, color: Colors.black),
-              ),
+           Text(
+        'Which sound did you hear?',
+          style: TextStyle(fontSize: 20, color: Colors.black),
+        ),
+
               SizedBox(height: 20),
               Wrap(
                 spacing: 16,

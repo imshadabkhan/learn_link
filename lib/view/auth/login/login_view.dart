@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:learn_link/controller/connectivity_check_controller.dart';
-
+import 'package:gif_view/gif_view.dart';
 import 'package:learn_link/core/widgets/custom_button.dart';
 import 'package:learn_link/core/widgets/entry_field.dart';
 import 'package:learn_link/core/widgets/widgets.dart';
@@ -34,6 +34,14 @@ class Login extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
           child: ListView(
             children: [
+              Widgets.heightSpaceH1,
+              GifView.asset(
+                'assets/images/blue_logo.gif',
+                height: 100,
+                width: 100,
+                frameRate: 50,
+              ),
+
               EntryField(
                 label: "Email",
                 hint: 'Enter your email',
@@ -54,7 +62,9 @@ class Login extends StatelessWidget {
                   )),
               Widgets.heightSpaceH5,
               CustomButton(
+
                 onTap: () async {
+                  FocusScope.of(context).unfocus();
                   if (!connectivity.isConnected.value) {
                     Widgets.showSnackBar("No Internet", "Please check your connection");
                     return;
@@ -71,7 +81,7 @@ class Login extends StatelessWidget {
                       "password": password.text.toString().trim(),
                     },
                   );
-                  FocusScope.of(context).unfocus();
+
                   password.clear();
                   email.clear();
                 },

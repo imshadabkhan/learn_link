@@ -17,7 +17,7 @@ class ApiService {
         '${Endpoints.baseUrl}$endPoint',
         options: Options(
           headers: {
-            "Authorization": "Bearer ${userController.token}",
+            "Authorization": "Bearer ${userController.token??''}",
             "Accept": "application/json"
           },
         ),
@@ -57,7 +57,7 @@ class ApiService {
         data: data,
         options: Options(
           headers: {
-            "Authorization": "Bearer ${userController.token}",
+            "Authorization": "Bearer ${userController.token.value}",
             "Accept": "application/json",
           },
         ),

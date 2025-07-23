@@ -12,14 +12,14 @@ class QuizItem {
 }
 
 class LetterController extends GetxController {
-  UserController userController=Get.find<UserController>();
+  final UserController userController=Get.find<UserController>();
   final List<QuizItem> quizItems = [
-    QuizItem(correctAnswer: 'b', options: ['b', 'd', 'p', 'q'], soundPath: 'sounds/letter_b.mp3'),
-    QuizItem(correctAnswer: 'd', options: ['b', 'd', 'p', 'q'], soundPath: 'sounds/letter_d.mp3'),
-    QuizItem(correctAnswer: 'p', options: ['b', 'd', 'p', 'q'], soundPath: 'sounds/letter_p.mp3'),
+    QuizItem(correctAnswer: 'b', options: ['q', 'd', 'p', 'b'], soundPath: 'sounds/letter_b.mp3'),
+    QuizItem(correctAnswer: 'd', options: ['b', 'p', 'd', 'q'], soundPath: 'sounds/letter_d.mp3'),
+    QuizItem(correctAnswer: 'p', options: ['b', 'd', 'q', 'p'], soundPath: 'sounds/letter_p.mp3'),
     QuizItem(correctAnswer: 'q', options: ['b', 'd', 'p', 'q'], soundPath: 'sounds/letter_q.mp3'),
-    QuizItem(correctAnswer: '14', options: ['14', '41', '11', '44'], soundPath: 'sounds/digit_14.mp3'),
-    QuizItem(correctAnswer: '41', options: ['14', '41', '11', '44'], soundPath: 'sounds/digit_41.mp3'),
+    QuizItem(correctAnswer: '14', options: ['4', '41', '14', '44'], soundPath: 'sounds/digit_14.mp3'),
+    QuizItem(correctAnswer: '41', options: ['14', '44', '11', '41'], soundPath: 'sounds/digit_41.mp3'),
   ];
   RxBool quizCompleted=false.obs;
   final currentIndex = 0.obs;

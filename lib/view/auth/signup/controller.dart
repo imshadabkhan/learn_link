@@ -11,7 +11,7 @@ import '../../../controller/usercontroller.dart';
 class AuthenticationController {
   final selectedRole = ''.obs;
 
-  UserController userController = Get.put<UserController>(UserController());
+  final UserController userController=Get.find<UserController>();
   final isPasswordHidden = true.obs;
   final isLoginPasswordHidden = true.obs;
   Future<String?> registerUser({required Map<String, String> data}) async {
@@ -75,19 +75,16 @@ class AuthenticationController {
           userId: user['id'],
           userName: user['name'],
           userRole: user['role'],
-          // userAge: user['age']
         );
         Widgets.showSnackBar('Login Successful', "Welcome ${user['name']}!");
         Get.offAllNamed(AppRoutes.letterReversal);
       } else {
-        Widgets.showSnackBar("Login Failed", "Invalid response from server");
+        Widgets.showSnackBar("Login Failed", "${response['message']}");
       }
     } catch (e) {
       Widgets.hideLoader();
-      Widgets.showSnackBar("Error", "Login failed: ${e.toString()}");
-      if (kDebugMode) {
-        print("Login error: ${e.toString()}");
-      }
+      Widgets.showSnackBar('Error', 'Failed to login user! ${e.toString()}');
+      return null;
     }
   }
 

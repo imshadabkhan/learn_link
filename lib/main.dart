@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:learn_link/controller/usercontroller.dart';
 import 'package:learn_link/core/routes/app_routes.dart';
 import 'package:learn_link/view/auth/signup/signup.dart';
+import 'package:learn_link/view/splash/splash_screen.dart';
 import 'controller/connectivity_check_controller.dart';
 
 
 
 void main() {
-  Get.put(ConnectivityController()); // Initialize it globally
+  Get.put(ConnectivityController());
+  Get.put(UserController());
   runApp(MyApp());
 }
 
@@ -36,11 +39,12 @@ class MyApp extends StatelessWidget {
           ),
           home: child,
           getPages: AppRoutes.routes,
+          initialRoute: '/',
+
         );
       },
-      child: Signup(),
-       // child: DyslexiaImageScanner(),
-       // child: AttentionModule(),
+      child: SplashScreen(),
+
     );
   }
 }
