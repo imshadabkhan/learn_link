@@ -3,21 +3,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class UserController {
   String? token;
+  String? username;
   Future saveUser(
       {required String userToken,
       required String userId,
       required String userName,
-      required String userRole,required String userAge}) async {
+      required String userRole,
+        // required String userAge
+      }) async {
     try {
       if (kDebugMode) {
         print('Saving User');
       }
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.setString("token", userToken);
-      final id = prefs.setString("id", userId);
-      final name = prefs.setString("name", userName);
-      final role = prefs.setString("role", userRole);
-      final age = prefs.setString("age", userAge);
+     prefs.setString("token", userToken);
+    prefs.setString("id", userId);
+  prefs.setString("name", userName);
+       prefs.setString("role", userRole);
+      // final age = prefs.setString("age", userAge);
     }catch(e){
       if (kDebugMode) {
         print('Failed To Save User ${e.toString()}');
@@ -60,6 +63,13 @@ class UserController {
       }
     }
   }
+
+  Future fetchUser()async{
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    token=prefs.getString('token');
+    username=prefs.getString('name');
+          }
 
   Future deleteScore() async {
     try {

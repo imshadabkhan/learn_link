@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:learn_link/controller/usercontroller.dart';
 import 'package:learn_link/core/routes/app_routes.dart';
 import 'package:learn_link/core/widgets/custom_button.dart';
 import 'package:learn_link/view/letter_reversal/controller/controller.dart';
 
 class LetterQuizScreen extends StatelessWidget {
   final controller = Get.put(LetterController());
+  UserController userController=Get.find<UserController>();
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class LetterQuizScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Which sound did you hear?',
+                'Which sound did you hear? ${userController.username}',
                 style: TextStyle(fontSize: 20, color: Colors.black),
               ),
               SizedBox(height: 20),

@@ -4,13 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:learn_link/core/routes/app_routes.dart';
 import 'package:learn_link/view/auth/signup/signup.dart';
-import 'package:learn_link/view/writing.dart';
-
-import 'view/attention/attention_screen.dart';
-import 'view/letter_reversal/view/letter_reversal.dart';
+import 'controller/connectivity_check_controller.dart';
 
 
-void main() => runApp(MyApp());
+
+void main() {
+  Get.put(ConnectivityController()); // Initialize it globally
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

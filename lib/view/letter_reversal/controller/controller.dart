@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:learn_link/controller/usercontroller.dart';
 
 class QuizItem {
   final String correctAnswer;
@@ -11,6 +12,7 @@ class QuizItem {
 }
 
 class LetterController extends GetxController {
+  UserController userController=Get.find<UserController>();
   final List<QuizItem> quizItems = [
     QuizItem(correctAnswer: 'b', options: ['b', 'd', 'p', 'q'], soundPath: 'sounds/letter_b.mp3'),
     QuizItem(correctAnswer: 'd', options: ['b', 'd', 'p', 'q'], soundPath: 'sounds/letter_d.mp3'),
@@ -32,6 +34,7 @@ class LetterController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+     userController.fetchUser();
     playCurrentSound();
   }
 

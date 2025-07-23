@@ -1,8 +1,7 @@
-import 'dart:ui';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:learn_link/controller/connectivity_check_controller.dart';
 import 'package:learn_link/core/widgets/custom_button.dart';
 import 'package:learn_link/core/widgets/custom_drop_down.dart';
 import 'package:learn_link/core/widgets/entry_field.dart';
@@ -12,7 +11,7 @@ import 'package:learn_link/view/auth/login/login_view.dart';
 import 'package:learn_link/view/auth/signup/controller.dart';
 
 class Signup extends StatefulWidget {
-  Signup({super.key});
+  const Signup({super.key});
 
   @override
   State<Signup> createState() => _SignupState();
@@ -21,6 +20,7 @@ class Signup extends StatefulWidget {
 class _SignupState extends State<Signup> {
   final AuthenticationController controller =
       Get.put(AuthenticationController());
+  final connectivity = Get.find<ConnectivityController>();
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
@@ -68,57 +68,51 @@ class _SignupState extends State<Signup> {
                   validator: (value) =>
                       value == null || value.isEmpty ? 'Age is required' : null,
                 ),
-            Obx(() => CustomDropdown(
-              onTap: () {
-                FocusScope.of(context).unfocus();
-                Get.bottomSheet(
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                    ),
-                    child: RoleSelectionBottomSheet(),
-                  ),
-                  isScrollControlled: true,
-                );
-
-              },
-
-              value: controller.selectedRole.value,
-              hint: 'Select Role',
-              label: 'Role',
-
-            ))
-
-            ,EntryField(
+                Obx(() => CustomDropdown(
+                      onTap: () {
+                        FocusScope.of(context).unfocus();
+                        Get.bottomSheet(
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(12)),
+                            ),
+                            child: RoleSelectionBottomSheet(),
+                          ),
+                          isScrollControlled: true,
+                        );
+                      },
+                      value: controller.selectedRole.value,
+                      hint: 'Select Role',
+                      label: 'Role',
+                    )),
+                EntryField(
                   controller: emailController,
                   label: "Email",
                   hint: "Enter your email",
                   textInputType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value == null || value.isEmpty)
+                    if (value == null || value.isEmpty) {
                       return 'Email is required';
+                    }
                     if (!GetUtils.isEmail(value)) return 'Enter a valid email';
                     return null;
                   },
                 ),
                 Obx(() => EntryField(
-                  onTrailingTap: (){
-                    controller.isPasswordHidden.value = !controller.isPasswordHidden.value;
-                  },
-                  controller: passwordController,
-                  label: "Password",
-                  hint: "Enter your password",
-                  obscureText: controller.isPasswordHidden.value,
-
-                  suffixIcon:
-
-                      controller.isPasswordHidden.value ? Icons.visibility_off : Icons.visibility,
-
-
-
-                )),
-
+                      onTrailingTap: () {
+                        controller.isPasswordHidden.value =
+                            !controller.isPasswordHidden.value;
+                      },
+                      controller: passwordController,
+                      label: "Password",
+                      hint: "Enter your password",
+                      obscureText: controller.isPasswordHidden.value,
+                      suffixIcon: controller.isPasswordHidden.value
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    )),
                 Widgets.heightSpaceH5,
                 CustomButton(
                   label: "Register",
@@ -135,6 +129,7 @@ class _SignupState extends State<Signup> {
                           'Validation Error', 'Name is required');
                       return;
                     }
+
                     if (age.isEmpty) {
                       Widgets.showSnackBar(
                           'Validation Error', 'Age is required');
@@ -168,6 +163,13 @@ class _SignupState extends State<Signup> {
                       "age": age,
                       "role": role,
                     };
+
+                    //Checking network connectivity
+                    if (!connectivity.isConnected.value) {
+                      Widgets.showSnackBar(
+                          "No Internet", "Please check your connection");
+                      return;
+                    }
 
                     // Call registerUser after validation passes
                     final result = await controller.registerUser(data: data);

@@ -13,6 +13,7 @@ class AuthenticationController {
 
   UserController userController = Get.put<UserController>(UserController());
   final isPasswordHidden = true.obs;
+  final isLoginPasswordHidden = true.obs;
   Future<String?> registerUser({required Map<String, String> data}) async {
     Widgets.showLoader('Creating account...');
     try {
@@ -68,13 +69,13 @@ class AuthenticationController {
       debugPrint("Login data enter by user ${loginData.toString()}");
        Widgets.hideLoader();
       if (response != null && response['token'] != null) {
-        final user = response['token']['user'];
+        final user = response['user'];
         await userController.saveUser(
           userToken: response['token'],
-          userId: user['id'].toString(),
+          userId: user['id'],
           userName: user['name'],
           userRole: user['role'],
-          userAge: user['age']
+          // userAge: user['age']
         );
         Widgets.showSnackBar('Login Successful', "Welcome ${user['name']}!");
         Get.offAllNamed(AppRoutes.letterReversal);
