@@ -4,9 +4,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:learn_link/controller/usercontroller.dart';
 import 'package:learn_link/core/routes/app_routes.dart';
+import 'package:learn_link/view/attention/attention_screen.dart';
 import 'package:learn_link/view/auth/signup/signup.dart';
+import 'package:learn_link/view/letter_reversal/view/letter_reversal.dart';
+import 'package:learn_link/view/memory_pattern/memory_pattern_ui.dart';
+import 'package:learn_link/view/number_sequence/number_sequence_game.dart';
+import 'package:learn_link/view/speaking/speaking_screen.dart';
 import 'package:learn_link/view/splash/splash_screen.dart';
 import 'controller/connectivity_check_controller.dart';
+import 'view/guardian_view.dart';
 
 
 
@@ -43,7 +49,7 @@ class MyApp extends StatelessWidget {
 
         );
       },
-      child: SplashScreen(),
+      child:AttentionModule(),
 
     );
   }

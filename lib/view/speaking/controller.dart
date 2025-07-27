@@ -3,32 +3,43 @@ import 'package:learn_link/core/routes/app_routes.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class SpeakingController extends GetxController {
+
+
+  var timeTaken = 0.obs;
+  var wrongWords = <String>[].obs;
+  var totalScore = 0.0.obs;
+
+  var pronunciationScores = <double>[];
+  var readingSpeeds = <double>[];
+  var totalErrorsList = <int>[];
+  var wrongWordsList = <List<String>>[];
+  var totalScores = <double>[];
+
+
   RxInt paragraphIndex = 0.obs;
   RxDouble progress = 0.0.obs;
   RxString recognizedText = ''.obs;
   RxDouble pronunciationScore = 0.0.obs;
   RxDouble readingSpeed = 0.0.obs;
   RxBool isListening = false.obs;
-
+  RxBool isFinished = false.obs;
+  RxDouble finalScore = 0.0.obs;
   RxInt totalErrors = 0.obs;
-  RxList<String> wrongWords = <String>[].obs;
-  RxDouble totalScore = 0.0.obs;
-  RxInt timeTaken = 0.obs;
   RxList<String> highlightedWords = <String>[].obs;
+
+  // NEW LISTS TO TRACK SCORES FOR ALL PARAGRAPHS
+  RxList<double> paragraphScores = <double>[].obs;
+  RxList<int> errorCounts = <int>[].obs;
 
   RxList<String> myParagraphs = [
     "The dog is big. It runs fast. The dog likes to play.",
-    "Sam has a toy. It is a red car. Sam plays with it every day. He loves his toy.",
-    "Lily has a pet cat. The cat is small and soft. It likes to sleep in the sun. The cat purrs when Lily pets it.",
-    "Ben and Mia go to the park. They run and jump on the swings. Ben likes to climb the big slide. Mia laughs when she slides down fast.",
-    "The sun is shining in the sky. Birds are singing in the trees. The flowers are colorful and smell sweet. It is a beautiful day, and the children are happy playing outside.",
+    "Sam has a toy. It is a red car. Sam plays with it every day",
+    "The sun is shining in the sky. Birds are singing in the trees. The flowers are colorful and smell sweet.",
   ].obs;
 
   RxList<String> myParagraphImages = [
     "assets/images/paragraph_one_image.png",
     "assets/images/paragraph_two_image.jpg",
-    "assets/images/paragraph_three_image.jpg",
-    "assets/images/paragraph_four_image.jpg",
     "assets/images/paragraph_five_image.jpg"
   ].obs;
 
@@ -43,11 +54,17 @@ class SpeakingController extends GetxController {
 
   Future<void> startListening() async {
     bool available = await _speech.initialize(
-      onStatus: (status) {},
+      onStatus: (status) {
+        print("Speech status: $status");
+        if (status == 'done' || status == 'notListening') {
+          stopListening(); // auto stop
+        }
+      },
       onError: (error) {
         print("Speech recognition error: $error");
       },
     );
+
     if (available) {
       isListening.value = true;
       recognizedText.value = '';
@@ -63,30 +80,54 @@ class SpeakingController extends GetxController {
     }
   }
 
+
   void stopListening() async {
+    if (paragraphIndex.value == myParagraphs.length - 1) {
+      await _speech.stop();
+      isListening.value = false;
+      _analyzeSpeech();
+      // Calculate final score
+      finalScore.value =
+          paragraphScores.fold(0.0, (sum, s) => sum + s) / paragraphScores.length;
+      print("Final Speaking Score: $finalScore");
+      isFinished.value = true;
+
+      // You can also pass it to next screen or save it in SharedPreferences if needed
+      // Get.toNamed(AppRoutes.attentionModule);
+      return;
+    }
     await _speech.stop();
     isListening.value = false;
     _analyzeSpeech();
+
+    // if (paragraphIndex.value == myParagraphs.length - 1) {
+    //   isFinished.value = true;
+    // }
   }
 
   void _analyzeSpeech() {
     final original = myParagraphs[paragraphIndex.value];
     final spoken = recognizedText.value;
 
-    final originalWords = original.split(RegExp(r'\s+'));
-    final spokenWords = spoken.split(RegExp(r'\s+'));
+    // Clean punctuation
+    String clean(String text) => text.replaceAll(RegExp(r'[^\w\s]'), '');
+    final originalWords = clean(original).split(RegExp(r'\s+'));
+    final spokenWords = clean(spoken).split(RegExp(r'\s+'));
 
-    int matches = 0;
+    Set<String> originalSet = originalWords.map((w) => w.toLowerCase()).toSet();
+    Set<String> spokenSet = spokenWords.map((w) => w.toLowerCase()).toSet();
+
+    int matches = spokenSet.intersection(originalSet).length;
+
     wrongWords.clear();
     highlightedWords.clear();
 
-    for (int i = 0; i < originalWords.length; i++) {
-      if (i < spokenWords.length && originalWords[i].toLowerCase() == spokenWords[i].toLowerCase()) {
-        highlightedWords.add(originalWords[i]);
-        matches++;
+    for (String word in originalWords) {
+      if (spokenSet.contains(word.toLowerCase())) {
+        highlightedWords.add(word); // correct
       } else {
-        highlightedWords.add("*${originalWords[i]}*"); // marked for red highlight
-        wrongWords.add(i < spokenWords.length ? spokenWords[i] : "(missed)");
+        highlightedWords.add("*$word*"); // wrong
+        wrongWords.add(word);
       }
     }
 
@@ -97,22 +138,37 @@ class SpeakingController extends GetxController {
     timeTaken.value = duration == 0 ? 1 : duration;
     readingSpeed.value = (spokenWords.length / timeTaken.value) * 60;
 
-    totalScore.value = (pronunciationScore.value * 0.7) +
+    double score = (pronunciationScore.value * 0.7) +
         ((readingSpeed.value > 120 ? 120 : readingSpeed.value) / 120 * 30);
+
+    totalScore.value = score;
+    paragraphScores.add(score);
+    pronunciationScores.add(pronunciationScore.value);
+    readingSpeeds.add(readingSpeed.value);
+    errorCounts.add(totalErrors.value);
   }
 
+
   void updateIndex() {
-    if (paragraphIndex.value == myParagraphs.length -1) {
-        Get.toNamed(AppRoutes.attentionModule);
-        return ;
-    }
+    // if (paragraphIndex.value == myParagraphs.length - 1) {
+    //   // Calculate final score
+    //   finalScore.value =
+    //       paragraphScores.fold(0.0, (sum, s) => sum + s) / paragraphScores.length;
+    //   print("Final Speaking Score: $finalScore");
+    //   isFinished.value = true;
+    //
+    //   // You can also pass it to next screen or save it in SharedPreferences if needed
+    //   // Get.toNamed(AppRoutes.attentionModule);
+    //   return;
+    // }
+
     paragraphIndex.value++;
     progress.value = paragraphIndex.value / (myParagraphs.length - 1);
     resetFeedback();
   }
 
   void resetFeedback() {
-    timeTaken.value=0;
+    timeTaken.value = 0;
     recognizedText.value = '';
     pronunciationScore.value = 0.0;
     readingSpeed.value = 0.0;

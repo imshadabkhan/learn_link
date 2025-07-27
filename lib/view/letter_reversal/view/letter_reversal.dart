@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:learn_link/controller/usercontroller.dart';
 import 'package:learn_link/core/routes/app_routes.dart';
 import 'package:learn_link/core/widgets/custom_button.dart';
+import 'package:learn_link/core/widgets/text_widgets.dart';
 import 'package:learn_link/view/letter_reversal/controller/controller.dart';
 
 class LetterQuizScreen extends StatelessWidget {
@@ -20,10 +21,12 @@ class LetterQuizScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-           Text(
-        'Which sound did you hear?',
-          style: TextStyle(fontSize: 20, color: Colors.black),
-        ),
+
+            Text(
+                'Which sound did you hear?',
+                style: TextStyle(fontSize: 20, color: Colors.black),
+              ),
+
 
               SizedBox(height: 20),
               Wrap(
@@ -81,19 +84,27 @@ class LetterQuizScreen extends StatelessWidget {
                  Obx(
                        () => ElevatedButton.icon(
                      style: ButtonStyle(
+
                          backgroundColor: WidgetStateProperty.all(
                              controller.isOptionDisabled.value == true
                                  ? Colors.green
                                  : Colors.red)),
                      onPressed: controller.nextQuestion,
-                     icon: Icon(Icons.skip_next),
-                     label: Text('Next'),
+                     icon: Icon(Icons.skip_next,color: controller.isOptionDisabled.value == true
+                     ? Colors.white
+                       : Colors.white,),
+                     label: Texts.textNormal('Next',color: controller.isOptionDisabled.value == true
+                         ? Colors.white
+                         : Colors.white,size: 12),
                    ),
                  ),
                ],
              ):CustomButton(
-               onTap: (){
+               onTap: ()async{
                  // Navigator.pushNamed(context, AppRoutes.letterReversal);
+                 await userController.saveScore(letterReversalScore: controller.finalResult.value);
+
+
                  Get.toNamed(AppRoutes.speakingModule);
                },
                label: "Next Module",

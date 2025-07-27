@@ -57,24 +57,43 @@ class UserController extends GetxController{
     }
   }
 
-  Future saveScore() async {
+  Future saveScore({
+    double? numberSequenceAccuracy,
+    int? attentionScore,
+    int? readingScore,
+    int? letterReversalScore,
+    int? writingScore,
+  }) async {
     try {
-      if (kDebugMode) {
-        print('Saving score...');
-      }
       final SharedPreferences dataPrefs = await SharedPreferences.getInstance();
 
-      await dataPrefs.setString("attentionScore", "attentionScore");
-      await dataPrefs.setString("readingScore", "reading");
-
-      await dataPrefs.setString("letterReversal", "letterReversal");
-      await dataPrefs.setString("writingScore", "writingScore");
-    } catch (e) {
-      if (kDebugMode) {
-        print('Failed To save score ${e.toString()}');
+      if (attentionScore != null) {
+        await dataPrefs.setInt("attentionScore", attentionScore);
       }
+
+
+      if (numberSequenceAccuracy != null) {
+        await dataPrefs.setDouble("numberSequenceAccuracy", numberSequenceAccuracy);
+      }
+
+      if (readingScore != null) {
+        await dataPrefs.setInt("readingScore", readingScore);
+      }
+
+      if (letterReversalScore != null) {
+        await dataPrefs.setInt("letterReversalScore", letterReversalScore);
+      }
+
+      if (writingScore != null) {
+        await dataPrefs.setInt("writingScore", writingScore);
+      }
+
+      print(' Score saved successfully');
+    } catch (e) {
+      print('❌ Failed to save score: ${e.toString()}');
     }
   }
+
 
   Future fetchUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();

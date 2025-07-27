@@ -47,7 +47,7 @@ dependencies:
   flutter_easyloading: 3.0.5
   connectivity_plus: ^6.1.4
   gif_view: ^1.0.3
-
+  flutter_tts: ^4.2.3
 
 dev_dependencies:
   flutter_test:

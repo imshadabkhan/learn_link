@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:learn_link/controller/usercontroller.dart';
 import 'package:learn_link/core/constants/asset_constant.dart';
+import 'package:learn_link/view/number_sequence/number_sequence_game.dart';
+import 'package:learn_link/view/writing.dart';
 
 class AttentionModuleController extends GetxController {
+  final userController=Get.find<UserController>();
   RxInt currentIndex = 0.obs;
   RxInt totalMarks = 0.obs;
   RxnString selectedImage = RxnString();
@@ -44,13 +48,14 @@ class AttentionModuleController extends GetxController {
   ];
 
   void marksCounter() {
-    if (selectedImage.value == null) {
+    if (selectedImage.value == null || selectedImage.value!.isEmpty) {
       debugPrint("⚠ No image selected yet.");
+      Get.snackbar("Select Image", "⚠ Please select an image before proceeding.");
       return;
     }
 
     if (selectedImage.value == mainImages[currentIndex.value]) {
-      totalMarks.value++;
+      totalMarks.value+=25;
       debugPrint("✔ Correct Answer!");
     } else {
       debugPrint("❌ Wrong Answer!");
@@ -59,25 +64,38 @@ class AttentionModuleController extends GetxController {
     debugPrint("Selected Image: ${selectedImage.value}");
     debugPrint("Correct Image: ${mainImages[currentIndex.value]}");
 
-    // Move to the next question
     if (currentIndex.value < mainImages.length - 1) {
+      // Move to next question
       currentIndex.value++;
-      selectedImage.value = '';
+      selectedImage.value = null;
 
       overlayVisible.value = true;
       opacity.value = 1.0;
 
       Future.delayed(const Duration(seconds: 5), () {
         opacity.value = 0.0;
-
         Future.delayed(const Duration(seconds: 1), () {
           overlayVisible.value = false;
         });
       });
     } else {
+
+      if (selectedImage.value == null || selectedImage.value!.isEmpty) {
+        Get.snackbar("Select Image", "⚠ Please select an image before completing.");
+        debugPrint("⚠ No image selected on last question.");
+        return;
+      }
+
+      Get.to(()=>DyslexiaImageScanner());
+      userController.saveScore(attentionScore: totalMarks.value);
+
+      selectedImage.value = null;
       debugPrint("🎉 Quiz Completed!");
+      debugPrint("final marks ${totalMarks.value.toString()}");
+      Get.snackbar("Completed", "Attention Module Completed");
     }
   }
+
 
   void opacityAndVisibilityController() {
     overlayVisible.value = true;
@@ -92,3 +110,4 @@ class AttentionModuleController extends GetxController {
     });
   }
 }
+
