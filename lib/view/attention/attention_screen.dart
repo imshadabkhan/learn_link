@@ -3,17 +3,26 @@ import 'package:get/get.dart';
 import 'package:learn_link/core/widgets/custom_button.dart';
 import 'package:learn_link/view/attention/controller.dart';
 
-import '../number_sequence/number_sequence_game.dart';
+import '../small_kids/number_sequence/number_sequence_game.dart';
+
 
 
 class AttentionModule extends StatelessWidget {
-  final AttentionModuleController attentionModuleController = Get.put(AttentionModuleController());
+  final AttentionModuleController attentionModuleController =
+  Get.put(AttentionModuleController());
 
   AttentionModule({super.key});
 
   @override
   Widget build(BuildContext context) {
-    attentionModuleController.opacityAndVisibilityController();
+    // Show instructions before starting
+    Future.microtask(() {
+      if (!attentionModuleController.hasSeenInstructions.value) {
+        _showInstructions(context);
+      } else {
+        attentionModuleController.opacityAndVisibilityController();
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -25,10 +34,6 @@ class AttentionModule extends StatelessWidget {
           ],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: attentionModuleController.marksCounter,
-      //   child: const Icon(Icons.arrow_forward),
-      // ),
       body: Stack(
         children: [
           Center(
@@ -41,25 +46,32 @@ class AttentionModule extends StatelessWidget {
                         () => GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 16.0,
                         mainAxisSpacing: 16.0,
                       ),
                       itemCount: attentionModuleController
-                          .subImages[attentionModuleController.currentIndex.value].length,
+                          .subImages[
+                      attentionModuleController.currentIndex.value]
+                          .length,
                       itemBuilder: (context, index) {
                         final image = attentionModuleController
-                            .subImages[attentionModuleController.currentIndex.value][index];
+                            .subImages[
+                        attentionModuleController.currentIndex.value][index];
                         return GestureDetector(
                           onTap: () {
-                            attentionModuleController.selectedImage.value = image;
+                            attentionModuleController.selectedImage.value =
+                                image;
                           },
                           child: Obx(
                                 () => Container(
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: attentionModuleController.selectedImage.value == image
+                                  color: attentionModuleController
+                                      .selectedImage.value ==
+                                      image
                                       ? Colors.green
                                       : Colors.transparent,
                                   width: 3.0,
@@ -76,35 +88,79 @@ class AttentionModule extends StatelessWidget {
                       },
                     ),
                   ),
-                  SizedBox(height: 20,),
-                   Obx(()=> CustomButton(
-                     onTap: (){
-
-                       attentionModuleController.currentIndex<attentionModuleController.mainImages.length ?attentionModuleController.marksCounter():Get.to(()=>NumberSequenceGame());
-
-
-                       },
-                     label: attentionModuleController.currentIndex<attentionModuleController.mainImages.length -1 ?"Next":"Next Module",backgroundColor: Colors.teal,textColor: Colors.white,),),
-
+                  const SizedBox(height: 20),
+                  Obx(
+                        () => CustomButton(
+                      onTap: () {
+                        attentionModuleController.currentIndex <
+                            attentionModuleController.mainImages.length
+                            ? attentionModuleController.marksCounter()
+                            : Get.to(() => NumberSequenceGame());
+                      },
+                      label: attentionModuleController.currentIndex <
+                          attentionModuleController.mainImages.length - 1
+                          ? "Next"
+                          : "Next Module",
+                      backgroundColor: Colors.teal,
+                      textColor: Colors.white,
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-          Obx(() => attentionModuleController.overlayVisible.value
-              ? Positioned.fill(
-            child: AnimatedOpacity(
-              opacity: attentionModuleController.opacity.value,
-              duration: const Duration(seconds: 1),
-              child: Image.asset(
-                attentionModuleController
-                    .mainImages[attentionModuleController.currentIndex.value],
-                fit: BoxFit.fitWidth,
+          Obx(
+                () => attentionModuleController.overlayVisible.value
+                ? Positioned.fill(
+              child: AnimatedOpacity(
+                opacity: attentionModuleController.opacity.value,
+                duration: const Duration(seconds: 1),
+                child: Image.asset(
+                  attentionModuleController.mainImages[
+                  attentionModuleController.currentIndex.value],
+                  fit: BoxFit.fitWidth,
+                ),
               ),
-            ),
-          )
-              : const SizedBox.shrink()),
+            )
+                : const SizedBox.shrink(),
+          ),
         ],
       ),
+    );
+  }
+
+  void _showInstructions(BuildContext context) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text(
+          "Attention Module Instructions",
+          style: TextStyle(fontWeight: FontWeight.bold,color: Colors.black),
+        ),
+        content: const Text(
+          "You will see a main image for a few seconds.\n\n"
+              "After it disappears, select the exact same image from the options below.\n\n"
+              "You get points for each correct match.\n\n"
+              "Click 'Start' when you're ready to begin.",
+          style: TextStyle(color: Colors.black),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              attentionModuleController.hasSeenInstructions.value = true;
+              Get.back();
+              attentionModuleController.opacityAndVisibilityController();
+            },
+            child: const Text("Start"),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
     );
   }
 }

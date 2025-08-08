@@ -47,7 +47,7 @@ class AuthenticationController {
       }
 
       // Fallback: show any other message from server
-      Widgets.showSnackBar('Error', message);
+      Widgets.showSnackBar('Message', message);
       return null;
 
     } catch (e) {
@@ -77,7 +77,9 @@ class AuthenticationController {
           userRole: user['role'],
         );
         Widgets.showSnackBar('Login Successful', "Welcome ${user['name']}!");
-        Get.offAllNamed(AppRoutes.letterReversal);
+        final isGuardian = user['role'] == 'guardian';
+        final nextRoute = isGuardian ? AppRoutes.guardianDashboard : AppRoutes.letterReversal;
+        Get.offAllNamed(nextRoute);
       } else {
         Widgets.showSnackBar("Login Failed", "${response['message']}");
       }

@@ -26,6 +26,7 @@ class SpeakingController extends GetxController {
   RxDouble finalScore = 0.0.obs;
   RxInt totalErrors = 0.obs;
   RxList<String> highlightedWords = <String>[].obs;
+  var hasSeenInstructions = false.obs;
 
   // NEW LISTS TO TRACK SCORES FOR ALL PARAGRAPHS
   RxList<double> paragraphScores = <double>[].obs;

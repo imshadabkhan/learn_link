@@ -135,13 +135,13 @@ class _SignupState extends State<Signup> {
                 Widgets.heightSpaceH5,
                 CustomButton(
                   label: "Register",
-                  backgroundColor: Colors.red,
+                  backgroundColor: Colors.teal,
                   onTap: () async {
                     String name = nameController.text.trim();
                     String email = emailController.text.trim();
                     String password = passwordController.text.trim();
                     String ageText = ageController.text.trim();
-                    String role = 'user'; // or get from dropdown
+                    String? role = controller.selectedRole.value;
 
                     // Basic validation checks
                     if (name.isEmpty) {
@@ -154,7 +154,6 @@ class _SignupState extends State<Signup> {
                       return;
                     }
 
-                    // Age numeric + range validation
                     final age = int.tryParse(ageText);
                     if (age == null) {
                       Widgets.showSnackBar('Validation Error', 'Age must be a valid number');
@@ -169,11 +168,15 @@ class _SignupState extends State<Signup> {
                       return;
                     }
 
+                    if (role == null || role.isEmpty) {
+                      Widgets.showSnackBar('Validation Error', 'Please select a role');
+                      return;
+                    }
+
                     if (email.isEmpty) {
                       Widgets.showSnackBar('Validation Error', 'Email is required');
                       return;
                     }
-
                     if (!GetUtils.isEmail(email)) {
                       Widgets.showSnackBar('Validation Error', 'Please enter a valid email');
                       return;
@@ -183,25 +186,22 @@ class _SignupState extends State<Signup> {
                       Widgets.showSnackBar('Validation Error', 'Password is required');
                       return;
                     }
-
                     if (password.length < 6) {
                       Widgets.showSnackBar('Validation Error', 'Password must be at least 6 characters');
                       return;
                     }
 
-                    // Check internet connectivity
                     if (!connectivity.isConnected.value) {
                       Widgets.showSnackBar("No Internet", "Please check your connection");
                       return;
                     }
 
-                    // If all validations pass, call register API
                     Map<String, String> data = {
                       "name": name,
                       "email": email,
                       "password": password,
                       "age": ageText,
-                      "role": role,
+                      "role": role.toLowerCase(), // Ensure lowercase if your API expects it
                     };
 
                     final result = await controller.registerUser(data: data);
@@ -211,10 +211,11 @@ class _SignupState extends State<Signup> {
                       emailController.clear();
                       passwordController.clear();
                       ageController.clear();
-
+                      controller.selectedRole.value = ''; // Reset role
                       Get.offAll(() => Login());
                     }
                   },
+
                 ),
 
                 Widgets.heightSpaceH2,

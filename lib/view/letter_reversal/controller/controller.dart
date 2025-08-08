@@ -16,6 +16,8 @@ class QuizItem {
 }
 
 class LetterController extends GetxController {
+  final RxBool showInstructions = true.obs;
+
   final UserController userController = Get.find<UserController>();
 
   final List<QuizItem> quizItems = [
@@ -43,7 +45,7 @@ class LetterController extends GetxController {
   void onInit() {
     super.onInit();
     userController.fetchUser();
-    playCurrentSound();
+    // playCurrentSound();
   }
 
   void playCurrentSound() async {

@@ -8,7 +8,7 @@ class NumberSequenceController extends GetxController {
   RxInt wrongAttempts = 0.obs;
   Rx<Duration> currentTime = Duration.zero.obs;
   RxBool gameOver = false.obs;
-
+  RxBool showInstructions = true.obs;
   late Stopwatch stopwatch;
   Timer? timer;
 

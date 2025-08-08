@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:learn_link/controller/usercontroller.dart';
 import 'package:learn_link/core/widgets/widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/routes/app_routes.dart';
 import 'controller.dart';
+
 
 class SpeakingScreen extends StatelessWidget {
   final SpeakingController controller = Get.put(SpeakingController());
   final UserController userController = Get.put(UserController());
+
   SpeakingScreen({super.key});
 
   @override
@@ -45,11 +46,15 @@ class SpeakingScreen extends StatelessWidget {
                     children: controller.highlightedWords.map((word) {
                       bool isWrong = word.startsWith("*") && word.endsWith("*");
                       return TextSpan(
-                        text: isWrong ? word.replaceAll("*", "") + " " : word + " ",
+                        text: isWrong
+                            ? word.replaceAll("*", "") + " "
+                            : word + " ",
                         style: TextStyle(
                           fontSize: 18,
                           color: isWrong ? Colors.red : Colors.black,
-                          fontWeight: isWrong ? FontWeight.bold : FontWeight.normal,
+                          fontWeight: isWrong
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       );
                     }).toList(),
@@ -123,10 +128,17 @@ class SpeakingScreen extends StatelessWidget {
                     ElevatedButton.icon(
                       onPressed: controller.isListening.value
                           ? null
-                          : controller.startListening,
+                          : () {
+                        if (!controller.hasSeenInstructions.value) {
+                          _showInstructions(context);
+                        } else {
+                          controller.startListening();
+                        }
+                      },
                       icon: const Icon(Icons.play_arrow),
                       label: const Text("Start Reading"),
                     ),
+
                     const SizedBox(width: 20),
                     ElevatedButton.icon(
                       onPressed: controller.isListening.value
@@ -139,28 +151,28 @@ class SpeakingScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 30),
 
-
                 if (controller.isFinished.value) ...[
                   const Divider(height: 40, thickness: 2),
-          Obx(()=>Text(
-            "Final Speaking Score: ${controller.finalScore.value.toStringAsFixed(2)} / 100",
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
-          ),),
-
+                  Obx(
+                        () => Text(
+                      "Final Speaking Score: ${controller.finalScore.value.toStringAsFixed(2)} / 100",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        // controller.updateIndex();
-
-                         userController.saveScore(readingScore:controller.finalScore.value.toInt());
-                         Get.toNamed(AppRoutes.attentionModule);
+                        userController.saveScore(
+                            readingScore:
+                            controller.finalScore.value.toInt());
+                        Get.toNamed(AppRoutes.attentionModule);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
@@ -171,13 +183,11 @@ class SpeakingScreen extends StatelessWidget {
                       ),
                       child: const Text(
                         "Next Module",
-                        style: TextStyle(fontSize: 18,color: Colors.white),
+                        style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
                     ),
                   ),
                 ],
-
-
               ],
             ),
           );
@@ -186,7 +196,8 @@ class SpeakingScreen extends StatelessWidget {
 
       // Floating FAB to go to next paragraph (only if not finished or last)
       floatingActionButton: Obx(() {
-        bool isLast = controller.paragraphIndex.value == controller.myParagraphs.length - 1;
+        bool isLast = controller.paragraphIndex.value ==
+            controller.myParagraphs.length - 1;
         if (controller.isFinished.value || isLast) {
           return const SizedBox.shrink(); // Hide FAB
         }
@@ -205,5 +216,43 @@ class SpeakingScreen extends StatelessWidget {
       }),
     );
   }
+
+  void _showInstructions(BuildContext context) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text(
+          "Speaking Module Instructions",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        content: const Text(
+          "You will be shown a paragraph.\n\n"
+              "Read it aloud clearly at a normal pace.\n\n"
+              "The microphone will start listening when you click 'Begin'.\n\n"
+              "You will be scored on pronunciation, speed, and accuracy.\n\n"
+              "Good luck!",
+          style: TextStyle(color: Colors.black),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              controller.hasSeenInstructions.value = true; // ✅ Mark as seen
+              Get.back();
+              controller.startListening();
+            },
+            child: const Text("Begin"),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
+  }
+
 }
+
 

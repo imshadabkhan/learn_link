@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:learn_link/view/auth/login/login_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserController extends GetxController{
+class UserController extends GetxController {
   RxString token = ''.obs;
   RxString userName = ''.obs;
   RxString userId = ''.obs;
@@ -30,7 +31,6 @@ class UserController extends GetxController{
       this.userId.value = userId;
       this.userName.value = userName;
       role.value = userRole;
-
     } catch (e) {
       if (kDebugMode) {
         print('Failed To Save User ${e.toString()}');
@@ -71,9 +71,9 @@ class UserController extends GetxController{
         await dataPrefs.setInt("attentionScore", attentionScore);
       }
 
-
       if (numberSequenceAccuracy != null) {
-        await dataPrefs.setDouble("numberSequenceAccuracy", numberSequenceAccuracy);
+        await dataPrefs.setDouble(
+            "numberSequenceAccuracy", numberSequenceAccuracy);
       }
 
       if (readingScore != null) {
@@ -93,7 +93,6 @@ class UserController extends GetxController{
       print('❌ Failed to save score: ${e.toString()}');
     }
   }
-
 
   Future fetchUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -118,6 +117,24 @@ class UserController extends GetxController{
       if (kDebugMode) {
         print('Failed To delete score ${e.toString()}');
       }
+    }
+  }
+
+  logOutUser() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.remove('token');
+      prefs.remove('name');
+      prefs.remove('id');
+      prefs.remove('role');
+      token.value = '';
+      userName.value = '';
+      userId.value = '';
+
+      Get.offAll(Login());
+      Get.snackbar("Success", "User logged out");
+    } catch (e) {
+      Get.snackbar("Error", "Failed to logout user");
     }
   }
 }

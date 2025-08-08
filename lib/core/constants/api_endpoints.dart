@@ -1,5 +1,5 @@
 class Endpoints{
-  static const String baseUrl='https://fyp-gtt5.onrender.com/';
+  static const String baseUrl='http://13.232.124.239:5000/';
   static const String login='login';
   static const String register='register';
   static const String submitD='submit';

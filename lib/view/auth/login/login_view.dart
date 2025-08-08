@@ -41,7 +41,6 @@ class Login extends StatelessWidget {
                 width: 100,
                 frameRate: 50,
               ),
-
               EntryField(
                 label: "Email",
                 hint: 'Enter your email',
@@ -86,7 +85,7 @@ class Login extends StatelessWidget {
                   email.clear();
                 },
                 label: "Login",
-                backgroundColor: Colors.red,
+                backgroundColor: Colors.teal,
               ),
               Widgets.heightSpaceH2,
               Align(

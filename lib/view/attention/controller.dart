@@ -2,10 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:learn_link/controller/usercontroller.dart';
 import 'package:learn_link/core/constants/asset_constant.dart';
-import 'package:learn_link/view/number_sequence/number_sequence_game.dart';
 import 'package:learn_link/view/writing.dart';
 
 class AttentionModuleController extends GetxController {
+  // Inside AttentionModuleController
+  RxBool hasSeenInstructions = false.obs;
+
   final userController=Get.find<UserController>();
   RxInt currentIndex = 0.obs;
   RxInt totalMarks = 0.obs;

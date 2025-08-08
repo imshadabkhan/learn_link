@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:get/get.dart';
+import 'package:learn_link/view/small_kids/memory_pattern/memory_pattern_model.dart';
 
-import 'package:learn_link/view/memory_pattern/memory_pattern_model.dart';
 
 class PatternMemoryController extends GetxController {
   RxList<PatternColor> currentSequence = <PatternColor>[].obs;
   RxList<PatternColor> userInput = <PatternColor>[].obs;
+  RxBool hasStarted = false.obs;
 
   RxInt score = 0.obs;
   RxInt errors = 0.obs;
@@ -15,6 +16,8 @@ class PatternMemoryController extends GetxController {
   RxBool isFinished = false.obs;
 
   Timer? timer;
+  int maxRounds = 5; // ✅ limit to 5 rounds
+  RxInt currentRound = 0.obs;
 
   final List<PatternColor> availableColors = [
     PatternColor.red,
@@ -26,8 +29,7 @@ class PatternMemoryController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    startTimer();
-    generateSequence();
+    // Removed auto start here — game will start only when user presses Start
   }
 
   void startTimer() {
@@ -37,12 +39,18 @@ class PatternMemoryController extends GetxController {
   }
 
   void generateSequence() {
+    if (currentRound.value >= maxRounds) {
+      endGame();
+      return;
+    }
+
+    currentRound++;
     userInput.clear();
     isShowingPattern.value = true;
     final random = Random();
     currentSequence.clear();
-    int length = 3 + score.value; // sequence gets longer with score
 
+    int length = 3 + score.value; // harder as score increases
     for (int i = 0; i < length; i++) {
       currentSequence.add(availableColors[random.nextInt(4)]);
     }
@@ -56,8 +64,8 @@ class PatternMemoryController extends GetxController {
     if (isShowingPattern.value || isFinished.value) return;
 
     userInput.add(color);
-
     int index = userInput.length - 1;
+
     if (userInput[index] != currentSequence[index]) {
       errors++;
       generateSequence();
@@ -76,6 +84,7 @@ class PatternMemoryController extends GetxController {
     score.value = 0;
     errors.value = 0;
     time.value = 0;
+    currentRound.value = 0;
     isFinished.value = false;
     generateSequence();
     startTimer();
@@ -91,3 +100,4 @@ class PatternMemoryController extends GetxController {
     };
   }
 }
+

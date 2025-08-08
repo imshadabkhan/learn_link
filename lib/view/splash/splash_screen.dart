@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:learn_link/core/widgets/text_widgets.dart';
 import 'package:learn_link/core/widgets/widgets.dart';
 import 'package:learn_link/view/auth/login/login_view.dart';
+import 'package:learn_link/view/guardian/guardian_view.dart';
 import 'package:learn_link/view/letter_reversal/view/letter_reversal.dart';
 
 import '../../controller/usercontroller.dart';
@@ -35,9 +36,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // Fetch user token first, then decide navigation
     userController.fetchUser().then((_) {
       Timer(const Duration(seconds: 3), () {
-        if (userController.token.value.isNotEmpty) {
+        if (userController.token.value.isNotEmpty && userController.role.value=="user") {
           // User logged in, navigate to LetterReversal screen (replace with your actual screen)
           Get.offAll(LetterQuizScreen());
+        }else if(userController.token.value.isNotEmpty && userController.role.value=="guardian"){
+          Get.offAll( GuardianDashboard() );
         } else {
           // User not logged in, navigate to login
           Get.offAll(() => Login());
