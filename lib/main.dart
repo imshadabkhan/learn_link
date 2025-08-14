@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:learn_link/controller/usercontroller.dart';
 import 'package:learn_link/core/routes/app_routes.dart';
+import 'package:learn_link/view/small_kids/letter_recognition/letter_recognition_view.dart';
 import 'package:learn_link/view/splash/splash_screen.dart';
+import 'package:learn_link/view/english_readers/writing.dart';
 import 'controller/connectivity_check_controller.dart';
-void main() {
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   Get.put(ConnectivityController());
   Get.put(UserController());
   runApp(MyApp());
@@ -38,7 +49,10 @@ class MyApp extends StatelessWidget {
 
         );
       },
-      child:SplashScreen(),
+      // child: LetterRecognitionPage(),
+
+       child:SplashScreen(),
+      //  child: DyslexiaImageScanner(),
 
     );
   }

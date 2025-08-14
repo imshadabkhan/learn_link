@@ -33,6 +33,10 @@ class ApiService {
         return null;
       }
     } on DioException catch (e) {
+      if (e.response?.data["message"] == "Invalid Token.") {
+        Get.snackbar("Invalid Token", "Token get expired");
+        userController.logOutUser();
+      }
       if (kDebugMode) {
         print("DioException: ${e.message}");
         if (e.response != null) {
@@ -48,7 +52,7 @@ class ApiService {
   }
 
   //for sending data to backend
-  static Future<dynamic> postData({String? endpoint, dynamic data}) async {
+  static Future<dynamic> postData({String? endpoint, var data}) async {
     final userController = Get.find<UserController>();
 
     try {
@@ -73,6 +77,14 @@ class ApiService {
         return response.data;
       }
     } on DioException catch (e) {
+      if (e.response?.data["message"] == "Invalid Token.") {
+        Get.snackbar("Invalid Token", "Token get expired");
+        userController.logOutUser();
+      }
+
+
+
+
       if (kDebugMode) {
         print("DioException: ${e.message}");
         if (e.response != null) {

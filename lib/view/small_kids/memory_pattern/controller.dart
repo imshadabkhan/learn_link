@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:get/get.dart';
+import 'package:learn_link/controller/usercontroller.dart';
 import 'package:learn_link/view/small_kids/memory_pattern/memory_pattern_model.dart';
 
 
 class PatternMemoryController extends GetxController {
   RxList<PatternColor> currentSequence = <PatternColor>[].obs;
   RxList<PatternColor> userInput = <PatternColor>[].obs;
-  RxBool hasStarted = false.obs;
+  final userController = Get.find<UserController>();  RxBool hasStarted = false.obs;
 
   RxInt score = 0.obs;
   RxInt errors = 0.obs;
@@ -29,6 +30,7 @@ class PatternMemoryController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
     // Removed auto start here — game will start only when user presses Start
   }
 
@@ -78,6 +80,12 @@ class PatternMemoryController extends GetxController {
   void endGame() {
     isFinished.value = true;
     timer?.cancel();
+
+    userController.SaveKidsScore(
+      memoryPatterScore: score.value,
+      memoryPatterTime: time.value.toDouble(),
+      memoryPatterErrors: errors.value,
+    );
   }
 
   void restart() {
@@ -88,9 +96,11 @@ class PatternMemoryController extends GetxController {
     isFinished.value = false;
     generateSequence();
     startTimer();
+
   }
 
   Map<String, dynamic> getResult() {
+
     return {
       "patternMemory": {
         "score": score.value,

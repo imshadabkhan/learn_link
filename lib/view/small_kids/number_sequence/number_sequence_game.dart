@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:learn_link/controller/usercontroller.dart';
 import 'package:learn_link/core/routes/app_routes.dart';
 import 'package:learn_link/core/widgets/text_widgets.dart';
-
-import 'package:learn_link/core/widgets/widgets.dart';
-import 'package:learn_link/view/attention/attention_screen.dart';
 import 'package:learn_link/view/small_kids/number_sequence/controller.dart';
-
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:learn_link/view/small_kids/phoneme_matching/audio_quiz.dart';
 
 class NumberSequenceGame extends StatelessWidget {
@@ -20,7 +13,14 @@ class NumberSequenceGame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Number Sequence Game")),
+      appBar: AppBar(title: const Text("Number Sequence Game"),
+
+        leading: GestureDetector(
+            onTap: (){
+              Get.toNamed(AppRoutes.navBar);
+            },
+            child: Icon(Icons.arrow_back)),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Obx(() {
@@ -117,7 +117,7 @@ class NumberSequenceGame extends StatelessWidget {
     );
   }
 
-  // ✅ Game Report UI
+
   Widget buildGameReport() {
     return Center(
       child: Column(
@@ -127,6 +127,7 @@ class NumberSequenceGame extends StatelessWidget {
           const SizedBox(height: 10),
           Texts.textNormal("Time: ${controller.currentTime.value.inSeconds} seconds"),
           Texts.textNormal("Mistakes: ${controller.wrongAttempts}"),
+          Texts.textNormal("Scores: ${controller.currentScore}"),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

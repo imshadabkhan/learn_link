@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gif_view/gif_view.dart';
+import 'package:learn_link/view/bottom_bar/bottomnavbar.dart';
 import 'dart:async';
 
 import 'package:learn_link/core/widgets/text_widgets.dart';
 import 'package:learn_link/core/widgets/widgets.dart';
 import 'package:learn_link/view/auth/login/login_view.dart';
 import 'package:learn_link/view/guardian/guardian_view.dart';
-import 'package:learn_link/view/letter_reversal/view/letter_reversal.dart';
 
 import '../../controller/usercontroller.dart';
 
@@ -38,9 +38,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       Timer(const Duration(seconds: 3), () {
         if (userController.token.value.isNotEmpty && userController.role.value=="user") {
           // User logged in, navigate to LetterReversal screen (replace with your actual screen)
-          Get.offAll(LetterQuizScreen());
+          Get.offAll((GuardianNavBar()));
         }else if(userController.token.value.isNotEmpty && userController.role.value=="guardian"){
-          Get.offAll( GuardianDashboard() );
+          Get.offAll( GuardianNavBar() );
         } else {
           // User not logged in, navigate to login
           Get.offAll(() => Login());
@@ -73,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               ),
               Widgets.heightSpaceH05,
               Texts.textBold(
-                'Learn Link',
+                'LexiScan ',
                 color: Colors.white,
               ),
             ],

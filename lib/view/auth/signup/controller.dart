@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:learn_link/view/bottom_bar/bottomnavbar.dart';
 import 'package:learn_link/core/constants/api_endpoints.dart';
 import 'package:learn_link/core/routes/app_routes.dart';
 import 'package:learn_link/core/services/http_service.dart';
@@ -66,8 +67,9 @@ class AuthenticationController {
         endpoint: Endpoints.login,
         data: loginData,
       );
-      debugPrint("Login data enter by user ${loginData.toString()}");
-       Widgets.hideLoader();
+      debugPrint("Login data entered by user: ${loginData.toString()}");
+      Widgets.hideLoader();
+
       if (response != null && response['token'] != null) {
         final user = response['user'];
         await userController.saveUser(
@@ -76,18 +78,24 @@ class AuthenticationController {
           userName: user['name'],
           userRole: user['role'],
         );
+
         Widgets.showSnackBar('Login Successful', "Welcome ${user['name']}!");
+
         final isGuardian = user['role'] == 'guardian';
-        final nextRoute = isGuardian ? AppRoutes.guardianDashboard : AppRoutes.letterReversal;
-        Get.offAllNamed(nextRoute);
+
+        if (isGuardian) {
+          Get.offAllNamed(AppRoutes.navBar); // example route for guardian
+        } else {
+          Get.offAllNamed(AppRoutes.navBar); // example route for user
+        }
       } else {
-        Widgets.showSnackBar("Login Failed", "${response['message']}");
+        Widgets.showSnackBar("Login Failed", response?['message'] ?? "Unknown error");
       }
     } catch (e) {
       Widgets.hideLoader();
       Widgets.showSnackBar('Error', 'Failed to login user! ${e.toString()}');
-      return null;
     }
   }
+
 
 }

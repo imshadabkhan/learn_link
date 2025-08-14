@@ -27,7 +27,15 @@ class PatternMemoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("🧠 Pattern Memory")),
+      appBar: AppBar(title: const Text("🧠 Pattern Memory"),
+        leading: GestureDetector(
+          onTap: (){
+            Get.toNamed(AppRoutes.navBar);
+          },
+          child: Icon(Icons.arrow_back)),
+
+
+      ),
       body: Obx(() {
 
         if (!controller.hasStarted.value) {

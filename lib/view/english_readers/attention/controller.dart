@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:learn_link/controller/usercontroller.dart';
 import 'package:learn_link/core/constants/asset_constant.dart';
-import 'package:learn_link/view/writing.dart';
+import 'package:learn_link/view/english_readers/writing.dart';
 
 class AttentionModuleController extends GetxController {
   // Inside AttentionModuleController
@@ -24,16 +24,18 @@ class AttentionModuleController extends GetxController {
 
   final List<List<String>> subImages = [
     [
-      ImageConstants.sub_Image1,
+
       ImageConstants.sub_Image2,
+      ImageConstants.sub_Image1,
       ImageConstants.sub_Image3,
       ImageConstants.sub_Image4,
     ],
     [
-      ImageConstants.sub_ImageFrog1,
+
       ImageConstants.sub_ImageFrog2,
       ImageConstants.sub_ImageFrog3,
       ImageConstants.sub_ImageFrog4,
+      ImageConstants.sub_ImageFrog1,
     ],
     [
       ImageConstants.sub_ImageDuck1,
@@ -42,9 +44,10 @@ class AttentionModuleController extends GetxController {
       ImageConstants.sub_ImageDuck4,
     ],
     [
-      ImageConstants.sub_ImageCroc1,
+
       ImageConstants.sub_ImageCroc2,
       ImageConstants.sub_ImageCroc3,
+      ImageConstants.sub_ImageCroc1,
       ImageConstants.sub_ImageCroc4,
     ],
   ];

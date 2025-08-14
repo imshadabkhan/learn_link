@@ -1,41 +1,65 @@
+import 'dart:async';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:learn_link/controller/usercontroller.dart';
 
 class AudioQuizController extends GetxController {
+  final userController = Get.find<UserController>();
   final AudioPlayer player = AudioPlayer();
+
   final RxInt currentIndex = 0.obs;
   final RxInt score = 0.obs;
+  final RxInt errors = 0.obs;
   final RxBool isFinished = false.obs;
-  var started = false.obs;
-  var isStarted = false.obs;
+  final RxBool started = false.obs;
+
+  final Rx<Duration> elapsedTime = Duration.zero.obs;
+
+  late Stopwatch stopwatch;
+  Timer? timer;
 
   final questions = [
     {
       "audio": "pronunciation_en_bat.mp3",
-      "options": ["pat", "bat"],
-      "answer": "bat",
+      "options": ["PAT", "BAT"],
+      "answer": "BAT",
     },
     {
       "audio": "pronunciation_en_dog.mp3",
-      "options": ["dock", "dog"],
-      "answer": "dog",
+      "options": ["DOCK", "DOG"],
+      "answer": "DOG",
     },
     {
       "audio": "pronunciation_en_sip.mp3",
-      "options": ["sip", "zip"],
-      "answer": "sip",
+      "options": ["SIP", "ZIP"],
+      "answer": "SIP",
     },
     {
       "audio": "pronunciation_en_van.mp3",
-      "options": ["van", "fan"],
-      "answer": "van",
+      "options": ["VAN", "FAN"],
+      "answer": "VAN",
     },
     {
       "audio": "pronunciation_en_thin.mp3",
-      "options": ["fin", "thin"],
-      "answer": "thin",
+      "options": ["FIN", "THIN"],
+      "answer": "THIN",
     },
   ];
+
+  void startQuiz() {
+    started.value = true;
+    score.value = 0;
+    errors.value = 0;
+    currentIndex.value = 0;
+    isFinished.value = false;
+    stopwatch = Stopwatch()..start();
+
+    timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      elapsedTime.value = stopwatch.elapsed;
+    });
+
+    playCurrentAudio();
+  }
 
   void playCurrentAudio() async {
     await player.stop();
@@ -45,27 +69,46 @@ class AudioQuizController extends GetxController {
   void selectAnswer(String selected) {
     if (selected == questions[currentIndex.value]["answer"]) {
       score.value++;
+    } else {
+      errors.value++;
     }
 
     if (currentIndex.value < questions.length - 1) {
       currentIndex.value++;
       playCurrentAudio();
     } else {
-      isFinished.value = true;
+      _finishQuiz();
     }
   }
 
-  void reset() {
-    score.value = 0;
-    currentIndex.value = 0;
-    isFinished.value = false;
-    isStarted.value = false;
+  void _finishQuiz() {
+    stopwatch.stop();
+    timer?.cancel();
+    isFinished.value = true;
+
+    // Save results
+    userController.SaveKidsScore(
+      phonemeMatchingScore: score.value,
+      phonemeMatchingScoreTime: elapsedTime.value.inSeconds.toDouble(),
+      phonemeMatchingErrors: errors.value,
+    );
   }
 
+  void reset() {
+    stopwatch.stop();
+    timer?.cancel();
+    started.value = false;
+    score.value = 0;
+    errors.value = 0;
+    elapsedTime.value = Duration.zero;
+    currentIndex.value = 0;
+    isFinished.value = false;
+  }
 
   @override
-  void onInit() {
-    super.onInit();
-    playCurrentAudio();
+  void onClose() {
+    timer?.cancel();
+    stopwatch.stop();
+    super.onClose();
   }
 }

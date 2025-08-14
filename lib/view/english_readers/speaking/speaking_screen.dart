@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gif_view/gif_view.dart';
 import 'package:learn_link/controller/usercontroller.dart';
+import 'package:learn_link/core/routes/app_routes.dart';
 import 'package:learn_link/core/widgets/widgets.dart';
-import '../../core/routes/app_routes.dart';
 import 'controller.dart';
 
 
@@ -16,7 +17,20 @@ class SpeakingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: GestureDetector(
+            onTap: (){
+              Get.toNamed(AppRoutes.navBar);
+            },
+            child: Icon(Icons.arrow_back)),
         title: const Text("Speaking Module"),
+        actions: [
+          GifView.asset(
+            'assets/images/readingg.gif',
+            height: 100,
+            width: 100,
+            frameRate: 10,
+          )
+        ],
       ),
 
       body: Padding(
@@ -93,7 +107,7 @@ class SpeakingScreen extends StatelessWidget {
                 ),
                 Text(
                   "Reading Speed: ${controller.readingSpeed.value.toStringAsFixed(2)} WPM",
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
                 ),
                 Text(
                   "Time Taken: ${controller.timeTaken.value} sec",
@@ -102,23 +116,33 @@ class SpeakingScreen extends StatelessWidget {
                 Widgets.heightSpaceH05,
                 Text(
                   "Total Errors: ${controller.totalErrors.value}",
-                  style: const TextStyle(fontSize: 16, color: Colors.red),
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
                 ),
                 Widgets.heightSpaceH05,
                 Text(
                   "Wrong Words: ${controller.wrongWords.join(', ')}",
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16, color: Colors.red),
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
                 ),
                 Widgets.heightSpaceH05,
                 Text(
                   "Total Score: ${controller.totalScore.value.toStringAsFixed(2)} / 100",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  ),
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
                 ),
+                Text("Reading Fluency: ${controller.readingFluency.value.toStringAsFixed(1)}%",   style: const TextStyle(fontSize: 16, color: Colors.black),),
+                Widgets.heightSpaceH05,
+                Text("Reading Comprehension: ${controller.readingComprehensionScore.value.toStringAsFixed(1)}%"  ,style: const TextStyle(fontSize: 16, color: Colors.black),),
+                Widgets.heightSpaceH05,
+                Text("Sight Word Recognition: ${controller.sightWordRecognitionScore.value.toStringAsFixed(1)}%",  style: const TextStyle(fontSize: 16, color: Colors.black),),
+                Widgets.heightSpaceH05,
+                Text("Phoneme Deletion: ${controller.phonemeDeletionScore.value.toStringAsFixed(1)}%",  style: const TextStyle(fontSize: 16, color: Colors.black),),
+                Widgets.heightSpaceH05,
+                Text("Rhyming: ${controller.rhymingScore.value.toStringAsFixed(1)}%",  style: const TextStyle(fontSize: 16, color: Colors.black),),
+                Widgets.heightSpaceH05,
+                Text("Syllable Segmentation: ${controller.syllableSegmentationScore.value.toStringAsFixed(1)}%",  style: const TextStyle(fontSize: 16, color: Colors.black),),
+                Widgets.heightSpaceH05,
+                Text("Non-Word Reading: ${controller.nonWordReadingScore.value.toStringAsFixed(1)}%",  style: const TextStyle(fontSize: 16, color: Colors.black),),
+
                 const SizedBox(height: 20),
 
                 // Start / Stop Buttons
@@ -194,7 +218,6 @@ class SpeakingScreen extends StatelessWidget {
         }),
       ),
 
-      // Floating FAB to go to next paragraph (only if not finished or last)
       floatingActionButton: Obx(() {
         bool isLast = controller.paragraphIndex.value ==
             controller.myParagraphs.length - 1;

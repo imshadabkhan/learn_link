@@ -5,7 +5,7 @@ import 'package:learn_link/core/routes/app_routes.dart';
 import 'package:learn_link/core/widgets/custom_button.dart';
 import 'package:learn_link/core/widgets/text_widgets.dart';
 import 'package:learn_link/core/widgets/widgets.dart';
-import 'package:learn_link/view/letter_reversal/controller/controller.dart';
+import 'package:learn_link/view/english_readers/letter_reversal/controller/controller.dart';
 
 class LetterQuizScreen extends StatelessWidget {
   final controller = Get.put(LetterController());

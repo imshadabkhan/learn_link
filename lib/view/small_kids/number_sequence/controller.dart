@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:get/get.dart';
+import 'package:learn_link/controller/usercontroller.dart';
 
 class NumberSequenceController extends GetxController {
+  final userController=Get.find<UserController>();
   RxList<int> numbers = <int>[].obs;
   RxInt currentNumber = 1.obs;
   RxInt wrongAttempts = 0.obs;
@@ -10,6 +12,7 @@ class NumberSequenceController extends GetxController {
   RxBool gameOver = false.obs;
   RxBool showInstructions = true.obs;
   late Stopwatch stopwatch;
+  RxInt currentScore=0.obs;
   Timer? timer;
 
   @override
@@ -34,9 +37,11 @@ class NumberSequenceController extends GetxController {
 
     if (tappedNumber == currentNumber.value) {
       numbers.remove(tappedNumber);
+      currentScore.value++;
       currentNumber.value++;
 
       if (currentNumber.value > 9) {
+        saveScore();
         gameOver.value = true;
         stopwatch.stop();
         timer?.cancel();
@@ -45,6 +50,13 @@ class NumberSequenceController extends GetxController {
       wrongAttempts.value++;
     }
   }
+
+  void saveScore()async{
+    await userController.SaveKidsScore(numberSequenceErrors: wrongAttempts.value,numberSequenceScore: currentScore.value.toInt(),numberSequenceTime:currentTime.value.inSeconds.toDouble());
+
+  }
+
+
 
   void resetGame() {
     currentNumber.value = 1;

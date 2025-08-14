@@ -3,9 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:learn_link/controller/usercontroller.dart';
+import 'package:learn_link/core/widgets/custom_button.dart';
+import 'package:learn_link/core/widgets/text_widgets.dart';
+import 'package:learn_link/view/small_kids/memory_pattern/memory_pattern_ui.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../routes/app_routes.dart';
 
 
 class Widgets {
+
   static var heightSpaceH05 = SizedBox(
     height: 2.h,
   );
@@ -85,7 +93,148 @@ class Widgets {
 
 
 
+  static Widget buildStudentCard(Map<String, dynamic> student,UserController controller) {
+    return Card(
+      elevation: 0.5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Name and Label in same row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(children: [
+                  Texts.textBold(
+                      "Name: ",
+                      size: 12
 
+                  ),
+                  Texts.textNormal(
+                      student['name'] ?? 'Unnamed',
+                      size: 12
+
+                  ),
+                ],),
+
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.teal.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Texts.textNormal(
+                      student['label'] ?? 'N/A',
+                      color: student['label']=="Dyslexic"?Colors.red:Colors.teal,
+                      size: 12,
+                      fontWeight: FontWeight.bold
+
+                  ),
+                ),
+              ],
+            ),
+
+
+            // Age, Gender, Parent History
+            Row(
+              children: [
+                Texts.textBold(
+                    "age: ",
+                    size: 14
+
+                ),
+                Texts.textNormal("${student['age'] ?? 'N/A'}",size: 14),
+
+              ],
+            ),
+            Widgets.heightSpaceH1,
+            Row(
+              children: [
+
+
+                Texts.textBold(
+                    "gender: ",
+                    size: 14
+
+                ),
+                Texts.textNormal("${student['gender'] ?? 'N/A'}",size: 14),
+              ],
+            ),
+            Widgets.heightSpaceH1,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Texts.textBold("Dyslexic family history: ",size: 14),
+                Texts.textNormal("${student['parent_history'].toString()}",size: 14),
+                Texts.textNormal("${student['age'].toString()}",size: 14),
+                Texts.textNormal("${student['id'].toString()}",size: 14),
+              ],
+            ),
+            Widgets.heightSpaceH3,
+
+            // Action Button
+            Align(
+              alignment: Alignment.centerRight,
+              child: CustomButton(
+
+                label: "Start Diagnosis",
+                backgroundColor: Colors.teal,
+                onTap: ()async{
+                 await controller.saveCurrentStudentDetail(studentId:student['id'] ,studentAge:student['age']);
+
+                  
+                  
+                  showDialog(
+                    context: Get.context!,
+                    builder: (context) {
+                      return AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        title: Texts.textBold("Can the student read?",size: 16),
+                        content: Texts.textNormal("Please confirm whether the student is able to read or not.",size: 14),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context); // Close dialog
+                              // Navigate to screen for reading students
+                              Get.toNamed(AppRoutes.letterReversal);
+                            },
+                            child: Texts.textBold("Yes",color: Colors.green,size: 14),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context); // Close dialog
+
+                              Get.to(()=>PatternMemoryScreen());
+                            },
+                            child: Texts.textBold("No",color: Colors.red,size: 14),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context); // Just dismiss
+                            },
+                            child: Texts.textBold("Cancel",color: Colors.black,size: 14),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
 
 }

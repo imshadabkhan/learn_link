@@ -1,18 +1,24 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:learn_link/core/widgets/widgets.dart';
 import 'package:learn_link/view/auth/login/login_view.dart';
+import 'package:learn_link/view/small_kids/kids_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserController extends GetxController {
+  final kidsController = Get.put(KidsController());
   RxString token = ''.obs;
   RxString userName = ''.obs;
   RxString userId = ''.obs;
   RxString role = ''.obs;
+
   Future saveUser({
     required String userToken,
     required String userId,
     required String userName,
     required String userRole,
+
     // required String userAge
   }) async {
     try {
@@ -24,7 +30,7 @@ class UserController extends GetxController {
       await prefs.setString("id", userId);
       await prefs.setString("name", userName);
       await prefs.setString("role", userRole);
-      // final age = prefs.setString("age", userAge);
+
       //update variable instantlyt
 
       token.value = userToken;
@@ -55,6 +61,128 @@ class UserController extends GetxController {
     } catch (e) {
       if (kDebugMode) print('Failed To delete User ${e.toString()}');
     }
+  }
+
+  Future SaveKidsScore(
+      {int? phonemeMatchingScore,
+      double? phonemeMatchingScoreTime,
+      int? phonemeMatchingErrors,
+      int? letterRecognitionScore,
+      double? letterRecognitionTime,
+      int? letterRecognitionErrors,
+      int? numberSequenceScore,
+      double? numberSequenceTime,
+      int? numberSequenceErrors,
+      int? memoryPatterScore,
+      double? memoryPatterTime,
+      int? memoryPatterErrors}) async {
+    try {
+      final SharedPreferences dataPrefs = await SharedPreferences.getInstance();
+
+      //PHONEMEMATCHING SECTION   "Voice will be played'
+      if (phonemeMatchingScore != null &&
+          phonemeMatchingScoreTime != null &&
+          phonemeMatchingErrors != null) {
+        await dataPrefs.setInt("phonemeMatchingScore", phonemeMatchingScore);
+        await dataPrefs.setDouble(
+            "phonemeMatchingScoreTime", phonemeMatchingScoreTime);
+        await dataPrefs.setInt("phonemeMatchingErrors", phonemeMatchingErrors);
+      }
+//////////////////LETTER RECOGNITION SECTION///////////////// Recognize letter
+
+      if (letterRecognitionScore != null &&
+          letterRecognitionTime != null &&
+          letterRecognitionErrors != null) {
+        await dataPrefs.setInt(
+            "letterRecognitionScore", letterRecognitionScore);
+        await dataPrefs.setDouble(
+            "letterRecognitionTime", letterRecognitionTime);
+        await dataPrefs.setInt(
+            "letterRecognitionErrors", letterRecognitionErrors);
+      }
+
+//////////////////////////ATTENTION SECTION SCORE/////////////////////  sequence
+
+      if (numberSequenceScore != null &&
+          numberSequenceTime != null &&
+          numberSequenceErrors != null) {
+        await dataPrefs.setInt("numberSequenceScore", numberSequenceScore);
+        await dataPrefs.setDouble("numberSequenceTime", numberSequenceTime);
+        await dataPrefs.setInt("numberSequenceErrors", numberSequenceErrors);
+      }
+
+///////////////////////////////Pattern Memory///////////////////// Colorfull Circles attention module
+
+      if (memoryPatterScore != null &&
+          memoryPatterTime != null &&
+          memoryPatterErrors != null) {
+        await dataPrefs.setInt("memoryPatterScore", memoryPatterScore);
+        await dataPrefs.setDouble("memoryPatterTime", memoryPatterTime);
+        await dataPrefs.setInt("memoryPatterErrors", memoryPatterErrors);
+      }
+      print(' Kids Score saved successfully of Memory Pattern $memoryPatterScore $memoryPatterTime $memoryPatterErrors ');
+      print(' Kids Score saved successfully of Number Sequence $numberSequenceScore $numberSequenceTime $numberSequenceErrors ');
+      print(' Kids Score saved successfully of Phonemec matching Sequence $phonemeMatchingScore $phonemeMatchingScoreTime $phonemeMatchingErrors ');
+      print(' Kids Score saved successfully of Letter Recognition $letterRecognitionScore $letterRecognitionTime $letterRecognitionErrors');
+
+
+
+
+    } catch (e) {
+      if (kDebugMode) {
+        print("Unable to Save Kids Data ${e.toString()}");
+      }
+    }
+  }
+
+
+  Future<void> showKidsSavedScores({context}) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final phonemeMatchingScore = prefs.getInt("phonemeMatchingScore") ?? 0;
+    final phonemeMatchingTime = prefs.getDouble("phonemeMatchingScoreTime") ?? 0.0;
+    final phonemeMatchingErrors = prefs.getInt("phonemeMatchingErrors") ?? 0;
+
+    final letterRecognitionScore = prefs.getInt("letterRecognitionScore") ?? 0;
+    final letterRecognitionTime = prefs.getDouble("letterRecognitionTime") ?? 0.0;
+    final letterRecognitionErrors = prefs.getInt("letterRecognitionErrors") ?? 0;
+
+    final numberSequenceScore = prefs.getInt("numberSequenceScore") ?? 0;
+    final numberSequenceTime = prefs.getDouble("numberSequenceTime") ?? 0.0;
+    final numberSequenceErrors = prefs.getInt("numberSequenceErrors") ?? 0;
+
+    final memoryPatterScore = prefs.getInt("memoryPatterScore") ?? 0;
+    final memoryPatterTime = prefs.getDouble("memoryPatterTime") ?? 0.0;
+    final memoryPatterErrors = prefs.getInt("memoryPatterErrors") ?? 0;
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("Saved Results",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.black),),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Phoneme Matching:Scores $phonemeMatchingScore , Time: ${phonemeMatchingTime.toStringAsFixed(0)} s, Errors $phonemeMatchingErrors ",style: TextStyle(color: Colors.black),),
+              Widgets.heightSpaceH1,
+              Text("Letter Recognition:Scores $letterRecognitionScore ,Time: ${letterRecognitionTime.toStringAsFixed(0)} s,Errors $letterRecognitionErrors",style: TextStyle(color: Colors.black),),
+              Widgets.heightSpaceH1,
+              Text("Number Sequence:Scores $numberSequenceScore ,Time: ${numberSequenceTime.toStringAsFixed(0)} s,Errors $numberSequenceErrors ",style: TextStyle(color: Colors.black),),
+              Widgets.heightSpaceH1,
+              Text("Memory Pattern:Scores $memoryPatterScore , Time: ${memoryPatterTime.toStringAsFixed(0)}s, Errors $memoryPatterErrors ",style: TextStyle(color: Colors.black),),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: ()async{
+              await kidsController.SubmitKidsReport(context);
+            },
+            child: Text("Diagnose",style: TextStyle(color: Colors.black),),
+          ),
+        ],
+      ),
+    );
   }
 
   Future saveScore({
@@ -123,6 +251,7 @@ class UserController extends GetxController {
   logOutUser() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.clear();
       prefs.remove('token');
       prefs.remove('name');
       prefs.remove('id');
@@ -137,4 +266,24 @@ class UserController extends GetxController {
       Get.snackbar("Error", "Failed to logout user");
     }
   }
+
+  Future saveCurrentStudentDetail({required String studentId, required String studentAge})async{
+    try{
+    SharedPreferences pref=await SharedPreferences.getInstance();
+    pref.setString("id",studentId);
+    pref.setString("age",studentAge.toString());
+
+    print('student id=$studentId');
+    print('student age=$studentAge');
+
+    }catch(e){
+      print("Failed to  save current student detail");
+
+
+
+    }
+
+  }
+
+
 }

@@ -15,7 +15,13 @@ class SpeakingController extends GetxController {
   var wrongWordsList = <List<String>>[];
   var totalScores = <double>[];
 
-
+  RxDouble readingFluency = 0.0.obs;
+  RxDouble readingComprehensionScore = 0.0.obs;
+  RxDouble sightWordRecognitionScore = 0.0.obs;
+  RxDouble phonemeDeletionScore = 0.0.obs;
+  RxDouble rhymingScore = 0.0.obs;
+  RxDouble syllableSegmentationScore = 0.0.obs;
+  RxDouble nonWordReadingScore = 0.0.obs;
   RxInt paragraphIndex = 0.obs;
   RxDouble progress = 0.0.obs;
   RxString recognizedText = ''.obs;
@@ -110,7 +116,6 @@ class SpeakingController extends GetxController {
     final original = myParagraphs[paragraphIndex.value];
     final spoken = recognizedText.value;
 
-    // Clean punctuation
     String clean(String text) => text.replaceAll(RegExp(r'[^\w\s]'), '');
     final originalWords = clean(original).split(RegExp(r'\s+'));
     final spokenWords = clean(spoken).split(RegExp(r'\s+'));
@@ -125,9 +130,9 @@ class SpeakingController extends GetxController {
 
     for (String word in originalWords) {
       if (spokenSet.contains(word.toLowerCase())) {
-        highlightedWords.add(word); // correct
+        highlightedWords.add(word);
       } else {
-        highlightedWords.add("*$word*"); // wrong
+        highlightedWords.add("*$word*");
         wrongWords.add(word);
       }
     }
@@ -135,19 +140,45 @@ class SpeakingController extends GetxController {
     totalErrors.value = wrongWords.length;
     pronunciationScore.value = (matches / originalWords.length) * 100;
 
+    // Reading Fluency = speed score (WPM scaled to 100)
+    readingFluency.value = ((spokenWords.length / timeTaken.value) * 60 / 150) * 100;
+    if (readingFluency.value > 100) readingFluency.value = 100;
+
+    // Reading Speed (already exists)
     final duration = DateTime.now().difference(_startTime).inSeconds;
     timeTaken.value = duration == 0 ? 1 : duration;
     readingSpeed.value = (spokenWords.length / timeTaken.value) * 60;
 
-    double score = (pronunciationScore.value * 0.7) +
-        ((readingSpeed.value > 120 ? 120 : readingSpeed.value) / 120 * 30);
+    // Reading Comprehension - placeholder: percentage of key words present
+    readingComprehensionScore.value = (matches / originalWords.length) * 100;
+
+    // Sight Word Recognition - based on common word list
+    List<String> sightWords = ["the", "is", "to", "and", "a", "in", "it", "you"];
+    int sightMatches = sightWords.where((w) => spokenSet.contains(w)).length;
+    sightWordRecognitionScore.value = (sightMatches / sightWords.length) * 100;
+
+    // Phoneme Deletion - placeholder logic (real test requires separate prompt)
+    phonemeDeletionScore.value = 80; // dummy until mini-test
+
+    // Rhyming - placeholder
+    rhymingScore.value = 70; // dummy until mini-test
+
+    // Syllable Segmentation - placeholder
+    syllableSegmentationScore.value = 75; // dummy until mini-test
+
+    // Non-Word Reading - placeholder
+    nonWordReadingScore.value = 60; // dummy until mini-test
+
+    // Total Score (include new metrics)
+    double score = (pronunciationScore.value * 0.5) +
+        (readingFluency.value * 0.2) +
+        (readingComprehensionScore.value * 0.2) +
+        (sightWordRecognitionScore.value * 0.1);
 
     totalScore.value = score;
     paragraphScores.add(score);
-    pronunciationScores.add(pronunciationScore.value);
-    readingSpeeds.add(readingSpeed.value);
-    errorCounts.add(totalErrors.value);
   }
+
 
 
   void updateIndex() {

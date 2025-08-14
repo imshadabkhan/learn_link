@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:learn_link/core/routes/app_routes.dart';
 import 'package:learn_link/core/widgets/custom_button.dart';
-import 'package:learn_link/view/attention/controller.dart';
+import 'package:learn_link/view/english_readers/attention/controller.dart';
+import 'package:learn_link/view/small_kids/number_sequence/number_sequence_game.dart';
 
-import '../small_kids/number_sequence/number_sequence_game.dart';
 
 
 
@@ -26,6 +27,11 @@ class AttentionModule extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: GestureDetector(
+            onTap: (){
+              Get.toNamed(AppRoutes.navBar);
+            },
+            child: Icon(Icons.arrow_back)),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -95,7 +101,7 @@ class AttentionModule extends StatelessWidget {
                         attentionModuleController.currentIndex <
                             attentionModuleController.mainImages.length
                             ? attentionModuleController.marksCounter()
-                            : Get.to(() => NumberSequenceGame());
+                            : Get.toNamed(AppRoutes.writingScanner);
                       },
                       label: attentionModuleController.currentIndex <
                           attentionModuleController.mainImages.length - 1
