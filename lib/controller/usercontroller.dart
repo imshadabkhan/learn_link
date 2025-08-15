@@ -176,7 +176,28 @@ class UserController extends GetxController {
         actions: [
           TextButton(
             onPressed: ()async{
-              await kidsController.SubmitKidsReport(context);
+              bool? diagnosedValue = await showDialog<bool?>(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: Text("Guardian Diagnosis",style: TextStyle(color: Colors.black),),
+                  content: Text("Is the student dyslexic?",style: TextStyle(color: Colors.black),),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true), // Dyslexic
+                      child: Text("Dyslexic",style: TextStyle(color: Colors.black),),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false), // Not Dyslexic
+                      child: Text("Not Dyslexic",style: TextStyle(color: Colors.black),),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, null), // Don't know
+                      child: Text("Don't Know",style: TextStyle(color: Colors.black),),
+                    ),
+                  ],
+                ),
+              );
+              await kidsController.SubmitKidsReport(context, diagnosedValue);
             },
             child: Text("Diagnose",style: TextStyle(color: Colors.black),),
           ),

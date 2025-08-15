@@ -172,8 +172,8 @@ class Widgets {
               children: [
                 Texts.textBold("Dyslexic family history: ",size: 14),
                 Texts.textNormal("${student['parent_history'].toString()}",size: 14),
-                Texts.textNormal("${student['age'].toString()}",size: 14),
-                Texts.textNormal("${student['id'].toString()}",size: 14),
+
+
               ],
             ),
             Widgets.heightSpaceH3,

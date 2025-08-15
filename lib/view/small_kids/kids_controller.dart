@@ -6,12 +6,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 class KidsController extends GetxController {
-  Future<void> SubmitKidsReport(BuildContext context) async {
+  Future<void> SubmitKidsReport(BuildContext context, bool? diagnosedDyslexic) async {
     try {
       // Load saved scores
       final prefs = await SharedPreferences.getInstance();
 
       var kidsData = {
+        "diagnosedDyslexic": diagnosedDyslexic,
         "studentId": prefs.getString('id'),
         "age": prefs.getString("age"),
         "tasks": {
@@ -57,7 +58,7 @@ class KidsController extends GetxController {
 
   void _showDiagnosisDialog(BuildContext context, Map<String, dynamic> data) {
     bool diagnosed = data["diagnosedDyslexic"];
-    // bool modelDiagnosis = data["diagnosedByModel"] ?? false;
+    bool modelDiagnosis = data["diagnosedByModel"] ?? false;
 
     showDialog(
       context: context,
@@ -89,6 +90,8 @@ class KidsController extends GetxController {
               Text("Letter Recognition: ${data["tasks"]["letterRecognition"]["score"]}",style: TextStyle(color: Colors.black),),
               Text("Attention: ${data["tasks"]["attention"]["score"]}",style: TextStyle(color: Colors.black),),
               Text("Pattern Memory: ${data["tasks"]["patternMemory"]["score"]}",style: TextStyle(color: Colors.black),),
+              SizedBox(height: 8),
+              Text("Model Diagnosis: $modelDiagnosis", style: TextStyle(fontWeight: FontWeight.bold,color: Colors.black)),
 
             ],
           ),
