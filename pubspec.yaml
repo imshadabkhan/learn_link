@@ -49,6 +49,7 @@ dependencies:
   gif_view: ^1.0.3
   flutter_tts: ^4.2.3
   url_launcher: ^6.3.2
+  pin_code_fields: ^8.0.1
 
 
 dev_dependencies:

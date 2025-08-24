@@ -52,8 +52,10 @@ class ApiService {
   }
 
   //for sending data to backend
-  static Future<dynamic> postData({String? endpoint, var data}) async {
+  static Future<dynamic> postData({String? endpoint, var data,String? resetToken,   // optional
+    bool useResetToken = false,}) async {
     final userController = Get.find<UserController>();
+
 
     try {
       final response = await dioService.post(
@@ -61,7 +63,9 @@ class ApiService {
         data: data,
         options: Options(
           headers: {
-            "Authorization": "Bearer ${userController.token.value}",
+            "Authorization": useResetToken
+                ? "Bearer $resetToken"
+                : "Bearer ${userController.token.value}",
             "Accept": "application/json",
           },
         ),

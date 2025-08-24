@@ -5,7 +5,9 @@ import 'package:learn_link/controller/connectivity_check_controller.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:learn_link/core/widgets/custom_button.dart';
 import 'package:learn_link/core/widgets/entry_field.dart';
+import 'package:learn_link/core/widgets/text_widgets.dart';
 import 'package:learn_link/core/widgets/widgets.dart';
+import 'package:learn_link/view/auth/forgot_password/forgot_password_view.dart';
 import 'package:learn_link/view/auth/signup/controller.dart';
 import 'package:learn_link/view/auth/signup/signup.dart';
 
@@ -59,6 +61,14 @@ class Login extends StatelessWidget {
                         ? Icons.visibility_off
                         : Icons.visibility,
                   )),
+              Align(
+                alignment: Alignment.centerRight,
+                child:GestureDetector(
+                  onTap: (){
+                    Get.to(ForgotPassword());
+                  },
+                  child: Texts.textNormal("Forgot Password",color: Colors.blue,size: 12,decoration: TextDecoration.underline),)
+                  ),
               Widgets.heightSpaceH5,
               CustomButton(
 

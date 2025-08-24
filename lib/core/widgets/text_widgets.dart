@@ -32,6 +32,7 @@ class Texts {
       style: TextStyle(
 
         decoration: decoration,
+
           textBaseline: textBaseline,
           fontSize: size ?? 18.0,
           fontWeight: fontWeight??FontWeight.w400,
