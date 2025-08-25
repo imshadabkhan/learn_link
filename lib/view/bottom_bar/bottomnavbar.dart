@@ -21,7 +21,7 @@ class _GuardianNavBarState extends State<GuardianNavBar> {
     DyslexiaProfileScreen(),
   ];
   final List<Widget> _userScreens = [
-    StudentHomeScreen(),
+    UserHomeScreen(),
     DyslexiaInfoScreen(),
     DyslexiaProfileScreen(),
   ];

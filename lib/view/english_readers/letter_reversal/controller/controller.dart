@@ -17,7 +17,6 @@ class QuizItem {
 
 class LetterController extends GetxController {
   final RxBool showInstructions = true.obs;
-
   final UserController userController = Get.find<UserController>();
 
   final List<QuizItem> quizItems = [
@@ -31,11 +30,15 @@ class LetterController extends GetxController {
 
   final RxBool quizCompleted = false.obs;
   final RxDouble totalScore = 0.0.obs;
-  final RxInt finalResult = 0.obs; // ✅ Final rounded score for use/display
+  final RxInt finalResult = 0.obs;
   final currentIndex = 0.obs;
   final selectedAnswer = ''.obs;
   final isCorrect = RxnBool();
   final isOptionDisabled = false.obs;
+
+  final RxInt totalErrors = 0.obs; // Track wrong answers
+  final RxInt totalTimeTaken = 0.obs; // Track total time
+  late Stopwatch _stopwatch;
 
   final player = AudioPlayer();
 
@@ -45,7 +48,8 @@ class LetterController extends GetxController {
   void onInit() {
     super.onInit();
     userController.fetchUser();
-    // playCurrentSound();
+    _stopwatch = Stopwatch()..start();
+    playCurrentSound();
   }
 
   void playCurrentSound() async {
@@ -63,38 +67,49 @@ class LetterController extends GetxController {
     if (isCorrect.value == true) {
       totalScore.value += 16.66;
       totalScore.value = double.parse(totalScore.value.toStringAsFixed(2));
-
-      if (totalScore.value > 100.0) {
-        totalScore.value = 100.0;
-      }
+      if (totalScore.value > 100.0) totalScore.value = 100.0;
+    } else {
+      totalErrors.value++; // Increment errors
     }
   }
 
   void nextQuestion() {
+    if (!isOptionDisabled.value) {
+      Get.snackbar('No Value Selected!', 'Select the value!');
+      return;
+    }
+
     if (currentIndex.value < quizItems.length - 1) {
-      if (isOptionDisabled.value == true) {
-        currentIndex.value++;
-        playCurrentSound();
-
-        selectedAnswer.value = '';
-        isCorrect.value = null;
-        isOptionDisabled.value = false;
-      } else {
-        Get.snackbar('No Value Selected!', 'Select the value!');
-      }
+      // Move to next question
+      currentIndex.value++;
+      selectedAnswer.value = '';
+      isCorrect.value = null;
+      isOptionDisabled.value = false;
+      playCurrentSound();
     } else {
-      if (isOptionDisabled.value == true) {
-        quizCompleted.value = true;
+      // Quiz Completed
+      _stopwatch.stop();
+      totalTimeTaken.value = _stopwatch.elapsed.inSeconds;
 
-        // ✅ Final Score rounded to int
-        finalResult.value = totalScore.value.round(); // Converts 99.96 to 100
+      quizCompleted.value = true;
+      finalResult.value = totalScore.value.round();
 
-        print('Final Score: ${finalResult.value}');
+      // Save the Letter Quiz results in UserController
+      userController.saveScore(
+        letterReversalScore: finalResult.value,
+        letterReversalTime: totalTimeTaken.value,
+        letterReversalErrorCount: totalErrors.value,
+      );
 
-        Get.snackbar('Quiz Completed', 'Your score is ${finalResult.value} / 100');
-      } else {
-        Get.snackbar('No Value Selected!', 'Select the value!');
-      }
+      print('Letter Quiz Completed:');
+      print('Score: ${finalResult.value}');
+      print('Time Taken: ${totalTimeTaken.value} sec');
+      print('Total Errors: ${totalErrors.value}');
+
+      Get.snackbar(
+        'Quiz Completed',
+        'Score: ${finalResult.value} / 100\nTime: ${totalTimeTaken.value}s\nErrors: ${totalErrors.value}',
+      );
     }
   }
 }

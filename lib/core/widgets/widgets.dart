@@ -115,6 +115,7 @@ class Widgets {
                       size: 12
 
                   ),
+
                   Texts.textNormal(
                       student['name'] ?? 'Unnamed',
                       size: 12
@@ -186,7 +187,7 @@ class Widgets {
                 label: "Start Diagnosis",
                 backgroundColor: Colors.teal,
                 onTap: ()async{
-                 await controller.saveCurrentStudentDetail(studentId:student['id'] ,studentAge:student['age']);
+                 await controller.saveCurrentStudentDetail(studentId:student['id'] ,studentAge:student['age'],familyHistoryDyslexic: student['parent_history_dyslexia']??false);
 
                   
                   

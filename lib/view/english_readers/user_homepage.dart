@@ -6,7 +6,7 @@ import 'package:learn_link/core/widgets/custom_button.dart';
 import 'package:learn_link/core/widgets/text_widgets.dart';
 import 'package:learn_link/core/widgets/widgets.dart';
 
-class StudentHomeScreen extends StatelessWidget {
+class UserHomeScreen extends StatelessWidget {
   final UserController controller = Get.find<UserController>();
 
   @override

@@ -4,24 +4,11 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class SpeakingController extends GetxController {
 
-
   var timeTaken = 0.obs;
   var wrongWords = <String>[].obs;
   var totalScore = 0.0.obs;
 
-  var pronunciationScores = <double>[];
-  var readingSpeeds = <double>[];
-  var totalErrorsList = <int>[];
-  var wrongWordsList = <List<String>>[];
-  var totalScores = <double>[];
-
   RxDouble readingFluency = 0.0.obs;
-  RxDouble readingComprehensionScore = 0.0.obs;
-  RxDouble sightWordRecognitionScore = 0.0.obs;
-  RxDouble phonemeDeletionScore = 0.0.obs;
-  RxDouble rhymingScore = 0.0.obs;
-  RxDouble syllableSegmentationScore = 0.0.obs;
-  RxDouble nonWordReadingScore = 0.0.obs;
   RxInt paragraphIndex = 0.obs;
   RxDouble progress = 0.0.obs;
   RxString recognizedText = ''.obs;
@@ -34,9 +21,14 @@ class SpeakingController extends GetxController {
   RxList<String> highlightedWords = <String>[].obs;
   var hasSeenInstructions = false.obs;
 
-  // NEW LISTS TO TRACK SCORES FOR ALL PARAGRAPHS
+  // TRACK SCORES FOR ALL PARAGRAPHS
   RxList<double> paragraphScores = <double>[].obs;
-  RxList<int> errorCounts = <int>[].obs;
+  RxList<int> paragraphErrors = <int>[].obs;
+  RxList<double> paragraphPronunciation = <double>[].obs;
+  RxList<double> paragraphReadingSpeed = <double>[].obs;
+  RxList<double> paragraphFluency = <double>[].obs;
+  RxList<int> paragraphTimeTaken = <int>[].obs;
+  RxList<int> paragraphWrongWordsCount = <int>[].obs;
 
   RxList<String> myParagraphs = [
     "The dog is big. It runs fast. The dog likes to play.",
@@ -62,9 +54,8 @@ class SpeakingController extends GetxController {
   Future<void> startListening() async {
     bool available = await _speech.initialize(
       onStatus: (status) {
-        print("Speech status: $status");
         if (status == 'done' || status == 'notListening') {
-          stopListening(); // auto stop
+          stopListening();
         }
       },
       onError: (error) {
@@ -87,29 +78,17 @@ class SpeakingController extends GetxController {
     }
   }
 
-
   void stopListening() async {
-    if (paragraphIndex.value == myParagraphs.length - 1) {
-      await _speech.stop();
-      isListening.value = false;
-      _analyzeSpeech();
-      // Calculate final score
-      finalScore.value =
-          paragraphScores.fold(0.0, (sum, s) => sum + s) / paragraphScores.length;
-      print("Final Speaking Score: $finalScore");
-      isFinished.value = true;
-
-      // You can also pass it to next screen or save it in SharedPreferences if needed
-      // Get.toNamed(AppRoutes.attentionModule);
-      return;
-    }
     await _speech.stop();
     isListening.value = false;
     _analyzeSpeech();
 
-    // if (paragraphIndex.value == myParagraphs.length - 1) {
-    //   isFinished.value = true;
-    // }
+    // If last paragraph, calculate final metrics
+    if (paragraphIndex.value >= myParagraphs.length - 1) {
+      finalScore.value = getFinalSpeakingScore();
+      isFinished.value = true;
+      print("Final Speaking Score: $finalScore");
+    }
   }
 
   void _analyzeSpeech() {
@@ -127,6 +106,7 @@ class SpeakingController extends GetxController {
 
     wrongWords.clear();
     highlightedWords.clear();
+    int paragraphWrong = 0;
 
     for (String word in originalWords) {
       if (spokenSet.contains(word.toLowerCase())) {
@@ -134,66 +114,58 @@ class SpeakingController extends GetxController {
       } else {
         highlightedWords.add("*$word*");
         wrongWords.add(word);
+        paragraphWrong++;
       }
     }
 
-    totalErrors.value = wrongWords.length;
+    totalErrors.value = paragraphWrong;
     pronunciationScore.value = (matches / originalWords.length) * 100;
 
-    // Reading Fluency = speed score (WPM scaled to 100)
-    readingFluency.value = ((spokenWords.length / timeTaken.value) * 60 / 150) * 100;
-    if (readingFluency.value > 100) readingFluency.value = 100;
-
-    // Reading Speed (already exists)
     final duration = DateTime.now().difference(_startTime).inSeconds;
     timeTaken.value = duration == 0 ? 1 : duration;
     readingSpeed.value = (spokenWords.length / timeTaken.value) * 60;
 
-    // Reading Comprehension - placeholder: percentage of key words present
-    readingComprehensionScore.value = (matches / originalWords.length) * 100;
+    readingFluency.value = ((spokenWords.length / timeTaken.value) * 60 / 150) * 100;
+    if (readingFluency.value > 100) readingFluency.value = 100;
 
-    // Sight Word Recognition - based on common word list
-    List<String> sightWords = ["the", "is", "to", "and", "a", "in", "it", "you"];
-    int sightMatches = sightWords.where((w) => spokenSet.contains(w)).length;
-    sightWordRecognitionScore.value = (sightMatches / sightWords.length) * 100;
-
-    // Phoneme Deletion - placeholder logic (real test requires separate prompt)
-    phonemeDeletionScore.value = 80; // dummy until mini-test
-
-    // Rhyming - placeholder
-    rhymingScore.value = 70; // dummy until mini-test
-
-    // Syllable Segmentation - placeholder
-    syllableSegmentationScore.value = 75; // dummy until mini-test
-
-    // Non-Word Reading - placeholder
-    nonWordReadingScore.value = 60; // dummy until mini-test
-
-    // Total Score (include new metrics)
-    double score = (pronunciationScore.value * 0.5) +
-        (readingFluency.value * 0.2) +
-        (readingComprehensionScore.value * 0.2) +
-        (sightWordRecognitionScore.value * 0.1);
-
+    double score = (pronunciationScore.value * 0.5) + (readingFluency.value * 0.2);
     totalScore.value = score;
+
+    // Save paragraph metrics
     paragraphScores.add(score);
+    paragraphErrors.add(paragraphWrong);
+    paragraphPronunciation.add(pronunciationScore.value);
+    paragraphReadingSpeed.add(readingSpeed.value);
+    paragraphFluency.add(readingFluency.value);
+    paragraphTimeTaken.add(timeTaken.value);
+    paragraphWrongWordsCount.add(paragraphWrong);
   }
 
+  double getFinalSpeakingScore() {
+    if (paragraphScores.isEmpty) return 0.0;
+    double total = paragraphScores.fold(0.0, (sum, s) => sum + s);
+    return total / paragraphScores.length;
+  }
 
+  Map<String, dynamic> getSpeakingResults() {
+    return {
+      "pronunciationAccuracy": paragraphPronunciation.isEmpty
+          ? 0.0
+          : paragraphPronunciation.fold(0.0, (a, b) => a + b) / paragraphPronunciation.length,
+      "readingSpeedWpm": paragraphReadingSpeed.isEmpty
+          ? 0.0
+          : paragraphReadingSpeed.fold(0.0, (a, b) => a + b) / paragraphReadingSpeed.length,
+      "timeTaken": paragraphTimeTaken.fold(0, (a, b) => a + b),
+      "totalErrors": paragraphErrors.fold(0, (a, b) => a + b),
+      "wrongWords": paragraphWrongWordsCount.fold(0, (a, b) => a + b),
+      "totalScore": finalScore.value,
+      "readingFluency": paragraphFluency.isEmpty
+          ? 0.0
+          : paragraphFluency.fold(0.0, (a, b) => a + b) / paragraphFluency.length,
+    };
+  }
 
   void updateIndex() {
-    // if (paragraphIndex.value == myParagraphs.length - 1) {
-    //   // Calculate final score
-    //   finalScore.value =
-    //       paragraphScores.fold(0.0, (sum, s) => sum + s) / paragraphScores.length;
-    //   print("Final Speaking Score: $finalScore");
-    //   isFinished.value = true;
-    //
-    //   // You can also pass it to next screen or save it in SharedPreferences if needed
-    //   // Get.toNamed(AppRoutes.attentionModule);
-    //   return;
-    // }
-
     paragraphIndex.value++;
     progress.value = paragraphIndex.value / (myParagraphs.length - 1);
     resetFeedback();

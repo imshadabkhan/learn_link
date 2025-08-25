@@ -9,7 +9,7 @@ class Endpoints{
   static const String verifyOtp='auth/verify-otp';
   static const String resendOtp='auth/resend-otp';
   static const String resetPassword='auth/reset-password';
-  static const String submitEnglishResult='predict-english-test';
+  static const String submitEnglishResult='submit-english-speaker-test';
   static const String submitKidsResult='submit-child-test';
 
 }

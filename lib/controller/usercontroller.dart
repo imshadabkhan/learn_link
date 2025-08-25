@@ -31,7 +31,7 @@ class UserController extends GetxController {
       await prefs.setString("name", userName);
       await prefs.setString("role", userRole);
 
-      //update variable instantlyt
+      //update variable instantly
 
       token.value = userToken;
       this.userId.value = userId;
@@ -207,37 +207,103 @@ class UserController extends GetxController {
   }
 
   Future saveScore({
+    int? memoryPatterScore,
+    double? memoryPatterTime,
+    int? memoryPatterErrors,
+    int? phonemeMatchingScore,
+    double? phonemeMatchingScoreTime,
+    int? phonemeMatchingErrors,
     double? numberSequenceAccuracy,
     int? attentionScore,
-    int? readingScore,
+    int? attentionTime,
+    int? attentionErrorCounts,
+
     int? letterReversalScore,
+  int? letterReversalTime,
+  int? letterReversalErrorCount,
+
     int? writingScore,
+    Map<String, dynamic>? speakingResults,
   }) async {
     try {
       final SharedPreferences dataPrefs = await SharedPreferences.getInstance();
-
-      if (attentionScore != null) {
-        await dataPrefs.setInt("attentionScore", attentionScore);
+      /////////////////////memoryPattern///////////////////////////////////////
+      if (memoryPatterScore != null &&
+          memoryPatterTime != null &&
+          memoryPatterErrors != null) {
+        await dataPrefs.setInt("memoryPatterScore", memoryPatterScore);
+        await dataPrefs.setDouble("memoryPatterTime", memoryPatterTime);
+        await dataPrefs.setInt("memoryPatterErrors", memoryPatterErrors);
       }
 
+      //PHONEMEMATCHING SECTION   "Voice will be played'
+      if (phonemeMatchingScore != null &&
+          phonemeMatchingScoreTime != null &&
+          phonemeMatchingErrors != null) {
+        await dataPrefs.setInt("phonemeMatchingScore", phonemeMatchingScore);
+        await dataPrefs.setDouble(
+            "phonemeMatchingScoreTime", phonemeMatchingScoreTime);
+        await dataPrefs.setInt("phonemeMatchingErrors", phonemeMatchingErrors);
+      }
+      ////////////////////////////////////////////////////////////////////
+
+      if (attentionScore != null && attentionTime!=null && attentionErrorCounts!=null) {
+        await dataPrefs.setInt("attentionScore", attentionScore);
+        await dataPrefs.setInt("attentionTime", attentionTime);
+        await dataPrefs.setInt("attentionErrorCounts",attentionErrorCounts);
+      }
+////////////////////////////////////////////////////////////////////////////////////////////////////
       if (numberSequenceAccuracy != null) {
         await dataPrefs.setDouble(
             "numberSequenceAccuracy", numberSequenceAccuracy);
       }
-
-      if (readingScore != null) {
-        await dataPrefs.setInt("readingScore", readingScore);
+////////////////////////////////////////////////////////////////////////////////////////////////
+      if (speakingResults != null) {
+        await dataPrefs.setDouble(
+            "speakingPronunciationAccuracy",
+            speakingResults["pronunciationAccuracy"] ?? 0.0);
+        await dataPrefs.setDouble(
+            "speakingReadingSpeedWpm",
+            speakingResults["readingSpeedWpm"] ?? 0.0);
+        await dataPrefs.setInt(
+            "speakingTimeTaken",
+            speakingResults["timeTaken"] ?? 0);
+        await dataPrefs.setInt(
+            "speakingTotalErrors",
+            speakingResults["totalErrors"] ?? 0);
+        await dataPrefs.setInt(
+            "speakingWrongWords",
+            speakingResults["wrongWords"] ?? 0);
+        await dataPrefs.setDouble(
+            "speakingTotalScore",
+            speakingResults["totalScore"] ?? 0.0);
+        await dataPrefs.setDouble(
+            "speakingReadingFluency",
+            speakingResults["readingFluency"] ?? 0.0);
       }
-
-      if (letterReversalScore != null) {
+////////////////////////////////////////////////////////////////////////////////////////////
+      if (letterReversalScore != null && letterReversalTime != null && letterReversalErrorCount != null) {
         await dataPrefs.setInt("letterReversalScore", letterReversalScore);
+        await dataPrefs.setInt("letterReversalTime", letterReversalTime);
+        await dataPrefs.setInt("letterReversalScore", letterReversalErrorCount);
       }
-
+/////////////////////////////////////////////////////////////////////////////////////////////
       if (writingScore != null) {
         await dataPrefs.setInt("writingScore", writingScore);
       }
 
       print(' Score saved successfully');
+      print(' Adult Score saved successfully of speaking $speakingResults');
+      print(' Adult Score saved successfully of attention $attentionScore $attentionTime $attentionErrorCounts ');
+
+      print(' Adult Score saved successfully of Memory Pattern $memoryPatterScore $memoryPatterTime $memoryPatterErrors ');
+      print(' Adult Score saved successfully of Phonemec matching Sequence $phonemeMatchingScore $phonemeMatchingScoreTime $phonemeMatchingErrors ');
+      print(' Adult Score saved successfully of letter reversal $letterReversalScore $letterReversalTime $letterReversalErrorCount ');
+
+
+
+
+
     } catch (e) {
       print('❌ Failed to save score: ${e.toString()}');
     }
@@ -288,12 +354,12 @@ class UserController extends GetxController {
     }
   }
 
-  Future saveCurrentStudentDetail({required String studentId, required String studentAge})async{
+  Future saveCurrentStudentDetail({required String studentId, required String studentAge,required bool familyHistoryDyslexic})async{
     try{
     SharedPreferences pref=await SharedPreferences.getInstance();
-    pref.setString("id",studentId);
-    pref.setString("age",studentAge.toString());
-
+    pref.setString("studentId",studentId);
+    pref.setString("studentAge",studentAge.toString());
+    pref.setBool("familyHistoryOfDyslexia",familyHistoryDyslexic);
     print('student id=$studentId');
     print('student age=$studentAge');
 

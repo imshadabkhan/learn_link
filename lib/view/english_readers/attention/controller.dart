@@ -2,18 +2,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:learn_link/controller/usercontroller.dart';
 import 'package:learn_link/core/constants/asset_constant.dart';
+import 'package:learn_link/core/routes/app_routes.dart';
 import 'package:learn_link/view/english_readers/writing.dart';
 
 class AttentionModuleController extends GetxController {
   // Inside AttentionModuleController
   RxBool hasSeenInstructions = false.obs;
-
+  late Stopwatch _stopwatch;
   final userController=Get.find<UserController>();
   RxInt currentIndex = 0.obs;
   RxInt totalMarks = 0.obs;
   RxnString selectedImage = RxnString();
   RxBool overlayVisible = false.obs;
   RxDouble opacity = 1.0.obs;
+  RxInt totalTime = 0.obs;  // total time spent in seconds
+  RxInt errorsCount = 0.obs;
 
   final List<String> mainImages = [
     ImageConstants.mainImage1,
@@ -52,6 +55,11 @@ class AttentionModuleController extends GetxController {
     ],
   ];
 
+  @override
+  void onInit() {
+    super.onInit();
+    _stopwatch = Stopwatch()..start();
+  }
   void marksCounter() {
     if (selectedImage.value == null || selectedImage.value!.isEmpty) {
       debugPrint("⚠ No image selected yet.");
@@ -91,12 +99,21 @@ class AttentionModuleController extends GetxController {
         return;
       }
 
-      Get.to(()=>DyslexiaImageScanner());
-      userController.saveScore(attentionScore: totalMarks.value);
+
+      _stopwatch.stop();
+      totalTime.value = _stopwatch.elapsed.inSeconds;
+
+      // Save attention module results
+      userController.saveScore(
+        attentionScore: totalMarks.value,
+        attentionTime: totalTime.value,
+        attentionErrorCounts: errorsCount.value,
+      );
 
       selectedImage.value = null;
       debugPrint("🎉 Quiz Completed!");
       debugPrint("final marks ${totalMarks.value.toString()}");
+      Get.toNamed(AppRoutes.audioQuizScreenForEnglishReaders);
       Get.snackbar("Completed", "Attention Module Completed");
     }
   }
@@ -115,4 +132,7 @@ class AttentionModuleController extends GetxController {
     });
   }
 }
+
+
+
 

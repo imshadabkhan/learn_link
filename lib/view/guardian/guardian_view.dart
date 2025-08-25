@@ -157,7 +157,7 @@ class _GuardianDashboardState extends State<GuardianDashboard>
                                   age: ageController.text,
                                   gender:
                                   guardianController.selectedGender.value,
-                                  ParentHistory:
+                                  parent_history_dyslexia:
                                   guardianController.hasParentHistory.value ,
                                   isDyslexic:
                                   guardianController.isDyslexic.value,

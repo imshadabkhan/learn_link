@@ -101,7 +101,7 @@ class AttentionModule extends StatelessWidget {
                         attentionModuleController.currentIndex <
                             attentionModuleController.mainImages.length
                             ? attentionModuleController.marksCounter()
-                            : Get.toNamed(AppRoutes.writingScanner);
+                            : Get.toNamed(AppRoutes.audioQuizScreenForEnglishReaders);
                       },
                       label: attentionModuleController.currentIndex <
                           attentionModuleController.mainImages.length - 1

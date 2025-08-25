@@ -18,14 +18,14 @@ RxString selectedGender ='Male'.obs;
     required String name,
     required String age,
     required String gender,
-    required bool ParentHistory,
+    required bool parent_history_dyslexia,
     required bool isDyslexic,
   }) async {
     Map<String, dynamic> data = {
       "name": name,
       "age": age,
       "gender": gender,
-      "parent_history_dyslexia": ParentHistory,
+      "parent_history_dyslexia": parent_history_dyslexia,
       "is_dyslexic": isDyslexic,
     };
 

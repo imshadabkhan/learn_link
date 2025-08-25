@@ -255,17 +255,13 @@ print(response);
       String password,
       ) async {
       Widgets.showLoader("Loading..");
-
       try {
         var payload = {
-
           "newPassword": password,
-
-
         };
         var response =
             await ApiService.postData(endpoint:Endpoints.resetPassword, data:payload,
-              resetToken: resetToken.value,    // ✅ send reset token
+              resetToken: resetToken.value,
               useResetToken: true,
             );
         debugPrint(response.toString());
